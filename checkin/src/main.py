@@ -3,11 +3,15 @@ import os
 import logging
 from logging.handlers import RotatingFileHandler
 from config import Config
-from models.database import Database
+# Importe o nosso novo gerenciador
+from models.database_manager import db_manager
 from routes.campanhas_api import campanhas_bp
 from routes.vans_api import vans_bp
 from routes.checking_api import checking_bp
 from routes.relatorios_api import relatorios_bp
+# Importe o agendador
+from apscheduler.schedulers.background import BackgroundScheduler
+import atexit
 
 # Configurar logging
 def configure_logging(app):
@@ -33,6 +37,22 @@ def create_app(config_class=Config):
     
     # Configurar logging
     configure_logging(app)
+
+    # Use o app_context para garantir que as configurações estejam disponíveis
+    with app.app_context():
+        # Inicializa nosso gerenciador de banco de dados
+        db_manager.initialize(app)
+
+    # Inicia o agendador para verificar a conexão do banco de dados
+    scheduler = BackgroundScheduler(daemon=True)
+    scheduler.add_job(
+        func=db_manager.schedule_reconnect_check,
+        trigger='interval',
+        minutes=5
+    )
+    scheduler.start()
+
+    atexit.register(lambda: scheduler.shutdown())
     
     # Registrar blueprints
     app.register_blueprint(campanhas_bp, url_prefix='/api/campanhas')
@@ -57,14 +77,14 @@ def create_app(config_class=Config):
             'versao': '1.0.0'
         })
     
-    # Inicializar conexão com o banco de dados
-    @app.before_first_request
-    def initialize_db():
-        try:
-            Database.initialize()
-            app.logger.info('Conexão com banco de dados inicializada')
-        except Exception as e:
-            app.logger.error(f'Erro ao inicializar banco de dados: {str(e)}')
+    # # Inicializar conexão com o banco de dados
+    # @app.before_first_request
+    # def initialize_db():
+    #     try:
+    #         Database.initialize()
+    #         app.logger.info('Conexão com banco de dados inicializada')
+    #     except Exception as e:
+    #         app.logger.error(f'Erro ao inicializar banco de dados: {str(e)}')
     
     # Handler para erro 404
     @app.errorhandler(404)
