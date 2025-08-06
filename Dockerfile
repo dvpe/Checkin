@@ -25,4 +25,4 @@ COPY --from=builder /app .
 EXPOSE 5002
 
 # Comando para rodar a aplicação com Gunicorn
-CMD ["gunicorn", "--bind", "0.0.0.0:5002", "src.main:create_app()"]
+CMD exec gunicorn --bind "0.0.0.0:$PORT" "src.main:create_app()"
