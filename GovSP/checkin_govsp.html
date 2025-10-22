@@ -1,0 +1,1547 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sistema Check-in GOV-SP - Campanha de Mídia em Trânsito 2025</title>
+    <!-- Adicionando Google Fonts para um visual mais moderno -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@100..900&display=swap" rel="stylesheet">
+    <style>
+        /* Reset e Configurações Básicas */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: linear-gradient(135deg, #1e3a8a 0%, #3b82f6 50%, #60a5fa 100%);
+            color: white;
+            min-height: 100vh;
+            padding: 20px;
+            position: relative;
+            overflow-x: hidden;
+        }
+
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><defs><pattern id="grid" width="10" height="10" patternUnits="userSpaceOnUse"><path d="M 10 0 L 0 0 0 10" fill="none" stroke="rgba(255,255,255,0.05)" stroke-width="0.5"/></pattern></defs><rect width="100" height="100" fill="url(%23grid)"/></svg>');
+            z-index: -1;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            position: relative;
+            z-index: 1;
+        }
+
+        /* Estilo do Cabeçalho */
+        .header {
+            text-align: center;
+            margin-bottom: 40px;
+            background: rgba(255, 255, 255, 0.15);
+            backdrop-filter: blur(20px);
+            border-radius: 25px;
+            padding: 40px;
+            border: 2px solid rgba(255, 255, 255, 0.2);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.2);
+        }
+
+        .logo {
+            width: 140px;
+            height: auto;
+            margin-bottom: 25px;
+            background: white;
+            padding: 15px;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+        }
+
+        .header h1 {
+            font-size: 3rem;
+            margin-bottom: 15px;
+            text-shadow: 3px 3px 6px rgba(0, 0, 0, 0.4);
+            font-weight: 800;
+            background: linear-gradient(45deg, #ffffff, #e3f2fd);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .header p {
+            font-size: 1.3rem;
+            opacity: 0.95;
+            margin-bottom: 8px;
+            font-weight: 400;
+        }
+
+        /* Estilo da Seção de Check-in e Controles */
+        .checkin-section {
+            background: rgba(255, 255, 255, 0.15);
+            backdrop-filter: blur(20px);
+            border-radius: 25px;
+            padding: 40px;
+            margin-bottom: 45px;
+            border: 2px solid rgba(255, 255, 255, 0.25);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
+        }
+
+        .simulation-title {
+            font-size: 2.2rem;
+            margin-bottom: 25px;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            font-weight: 600;
+        }
+
+        .checkin-form {
+            display: flex;
+            gap: 20px;
+            margin-bottom: 25px;
+            flex-wrap: wrap;
+            align-items: flex-end;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            min-width: 280px;
+            flex-grow: 1;
+        }
+
+        .form-group label {
+            font-weight: 600;
+            margin-bottom: 8px;
+            font-size: 1.1rem;
+        }
+
+        .form-group select {
+            padding: 15px 20px;
+            border: none;
+            border-radius: 12px;
+            background: white;
+            color: #1e3a8a;
+            font-size: 1.1rem;
+            cursor: pointer;
+            font-weight: 500;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+            transition: all 0.3s ease;
+            appearance: none;
+            background-image: url('data:image/svg+xml;charset=US-ASCII,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22292.4%22%20height%3D%22292.4%22%20viewBox%3D%220%200%20292.4%20292.4%22%3E%3Cpath%20fill%3D%22%231e3a8a%22%20d%3D%22M287%20197.9l-14.3-14.3c-1.9-1.9-4.1-2.9-6.4-2.9s-4.5%201-6.4%202.9L146.2%20259.5%2032.5%20145.8c-1.9-1.9-4.1-2.9-6.4-2.9s-4.5%201-6.4%202.9L5.4%20160.1c-3.8%203.8-3.8%2010%200%2013.8l134.8%20134.8c1.9%201.9%204.1%202.9%206.4%202.9s4.5-1%206.4-2.9l134.8-134.8c3.8-3.8%203.8-10%200-13.8z%22%2F%3E%3C%2Fsvg%3E');
+            background-repeat: no-repeat;
+            background-position: right 15px top 50%;
+            background-size: 12px;
+        }
+
+        .form-group select:hover {
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.2);
+            transform: translateY(-2px);
+        }
+
+        .controls {
+            display: flex;
+            gap: 20px;
+            margin-top: 25px;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+
+        .controls button {
+            padding: 15px 25px;
+            border: none;
+            border-radius: 12px;
+            cursor: pointer;
+            font-size: 1.1rem;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        .btn-checkin {
+            background: linear-gradient(45deg, #10b981, #059669);
+            color: white;
+        }
+
+        .btn-checkin:hover {
+            background: linear-gradient(45deg, #059669, #047857);
+            transform: translateY(-3px);
+        }
+
+        .btn-simulate {
+            background: linear-gradient(45deg, #ffffff, #f5f5f5);
+            color: #1e3a8a;
+        }
+
+        .btn-simulate:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
+        }
+
+        .btn-clear {
+            background: rgba(255, 255, 255, 0.25);
+            color: white;
+            border: 2px solid rgba(255, 255, 255, 0.4);
+        }
+
+        .btn-clear:hover {
+            background: rgba(255, 255, 255, 0.35);
+            transform: translateY(-3px);
+        }
+
+        /* Estilo da Seção de Cards (Detalhamento por Cidade) */
+        .cards-section {
+            margin-top: 40px;
+        }
+
+        .section-title {
+            font-size: 2.2rem;
+            margin-bottom: 30px;
+            font-weight: 700;
+            text-align: center;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+        }
+
+        #cards-container {
+            display: flex;
+            flex-direction: column;
+            gap: 30px;
+        }
+
+        .city-card {
+            background: rgba(255, 255, 255, 0.98);
+            color: #1e3a8a;
+            padding: 30px;
+            border-radius: 20px;
+            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.2);
+            border: 2px solid #3b82f6;
+            transition: transform 0.3s ease;
+        }
+
+        .city-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.3);
+        }
+
+        .city-header {
+            border-bottom: 3px solid #e0e7ff;
+            padding-bottom: 15px;
+            margin-bottom: 20px;
+        }
+
+        .city-name {
+            font-size: 2.5rem;
+            font-weight: 800;
+            color: #1e3a8a;
+            line-height: 1.2;
+        }
+
+        .vehicle-count {
+            font-size: 1.2rem;
+            font-weight: 600;
+            color: #3b82f6;
+            margin-top: 5px;
+        }
+
+        .investment-details {
+            font-size: 1.1rem;
+            margin-bottom: 20px;
+            padding: 10px 0;
+            border-top: 1px dashed #e0e7ff;
+            border-bottom: 1px dashed #e0e7ff;
+        }
+
+        /* Galeria de Vans */
+        .vans-gallery {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 25px;
+        }
+
+        .van-gallery-item {
+            background: #ffffff;
+            border: 1px solid #e0e7ff;
+            border-radius: 15px;
+            overflow: hidden;
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.08);
+            transition: box-shadow 0.3s ease;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .van-gallery-item:hover {
+            box-shadow: 0 12px 30px rgba(0, 0, 0, 0.15);
+        }
+
+        .van-gallery-photo {
+            width: 100%;
+            height: 200px;
+            object-fit: contain;
+            display: block;
+            transition: transform 0.5s ease;
+            background: #f8fafc;
+        }
+
+        .van-gallery-item:hover .van-gallery-photo {
+            transform: scale(1.05);
+        }
+
+        .van-gallery-info {
+            padding: 15px;
+            font-size: 0.95rem;
+            line-height: 1.5;
+            color: #1e3a8a;
+        }
+
+        /* Estilo do Dropdown de Escolas */
+        .escolas-dropdown {
+            margin-top: 10px;
+            border-top: 1px solid #e0e7ff;
+            padding: 10px 15px;
+            color: #3b82f6;
+        }
+
+        .escolas-dropdown summary {
+            font-weight: 700;
+            cursor: pointer;
+            list-style: none;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 5px 0;
+            transition: color 0.3s ease;
+        }
+
+        .escolas-dropdown summary:hover {
+            color: #1e3a8a;
+        }
+
+        .escolas-dropdown summary::after {
+            content: '▼';
+            font-size: 0.8em;
+            transition: transform 0.3s ease;
+        }
+
+        .escolas-dropdown[open]>summary::after {
+            transform: rotate(180deg);
+        }
+
+        .escolas-dropdown .escolas-list {
+            padding: 10px 0;
+            border-top: 1px solid #e0e7ff;
+            margin-top: 10px;
+        }
+
+        .escolas-dropdown .escolas-list ul {
+            list-style-type: disc;
+            padding-left: 25px;
+        }
+
+        .escolas-dropdown .escolas-list li {
+            margin-bottom: 5px;
+            color: #1e3a8a;
+        }
+
+        /* Van Info Section */
+        .van-info {
+            display: none;
+        }
+
+        .van-photo {
+            border-radius: 10px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        /* Simulation Section */
+        .simulation-section {
+            background: rgba(255, 255, 255, 0.15);
+            backdrop-filter: blur(20px);
+            border-radius: 25px;
+            padding: 40px;
+            margin-bottom: 45px;
+            border: 2px solid rgba(255, 255, 255, 0.25);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
+        }
+
+        #map {
+            width: 100%;
+            height: 600px;
+            border-radius: 20px;
+            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.25);
+            margin-bottom: 25px;
+            border: 3px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .status-container {
+            background: rgba(255, 255, 255, 0.12);
+            border-radius: 15px;
+            padding: 20px;
+            margin-bottom: 25px;
+            backdrop-filter: blur(10px);
+        }
+
+        #status {
+            text-align: center;
+            padding: 25px;
+            opacity: 0.8;
+            font-style: italic;
+            font-size: 1.1rem;
+        }
+
+        /* Métricas */
+        .metrics-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 25px;
+            margin-bottom: 45px;
+        }
+
+        .metric-card {
+            background: rgba(255, 255, 255, 0.98);
+            color: #1e3a8a;
+            padding: 30px;
+            border-radius: 20px;
+            text-align: center;
+            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.15);
+            border: 2px solid rgba(255, 255, 255, 0.3);
+        }
+
+        .metric-number {
+            font-size: 2.8rem;
+            font-weight: 800;
+            margin-bottom: 12px;
+            color: #1e3a8a;
+        }
+
+        .metric-label {
+            font-size: 1rem;
+            opacity: 0.85;
+            color: #3b82f6;
+            font-weight: 500;
+        }
+
+        /* Details Grid */
+        .details-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 25px;
+            margin-bottom: 45px;
+        }
+
+        .detail-item {
+            background: rgba(255, 255, 255, 0.12);
+            padding: 20px;
+            border-radius: 15px;
+            border-left: 5px solid #ffffff;
+            backdrop-filter: blur(10px);
+        }
+
+        .detail-label {
+            font-weight: 700;
+            margin-bottom: 8px;
+            font-size: 1.1rem;
+        }
+
+        /* Responsividade */
+        @media (max-width: 768px) {
+            .header h1 {
+                font-size: 2rem;
+            }
+
+            .simulation-title {
+                font-size: 1.5rem;
+            }
+
+            .city-name {
+                font-size: 1.8rem;
+            }
+
+            .vans-gallery {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <!-- Cabeçalho -->
+        <div class="header">
+            <img src="https://raw.githubusercontent.com/dvpe/Checkin/main/GovSP/GOVSP.png" alt="Logo GOV-SP" class="logo">
+            <h1>Sistema de Check-in - Campanha GOV-SP</h1>
+            <p>Mídia em Trânsito 2025</p>
+            <p>Região Oeste do Estado de São Paulo</p>
+        </div>
+
+        <!-- Resumo da Campanha -->
+        <div class="checkin-section">
+            <div class="simulation-title">
+                📊 Resumo da Campanha
+            </div>
+            <div class="details-grid">
+                <div class="detail-item">
+                    <div class="detail-label">🎯 Objetivo:</div>
+                    <div>Maximizar visibilidade em cidades estratégicas do interior de São Paulo</div>
+                </div>
+                <div class="detail-item">
+                    <div class="detail-label">📍 Mercado-Alvo:</div>
+                    <div>11 Cidades Estratégicas</div>
+                </div>
+                <div class="detail-item">
+                    <div class="detail-label">💰 Investimento Total:</div>
+                    <div>R$ 32.000,00</div>
+                </div>
+                <div class="detail-item">
+                    <div class="detail-label">📊 Cobertura:</div>
+                    <div>62 Escolas Atendidas</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Seção de Métricas -->
+        <div class="metrics-container">
+            <div class="metric-card">
+                <div class="metric-number">31</div>
+                <div class="metric-label">Total de Veículos</div>
+            </div>
+            <div class="metric-card">
+                <div class="metric-number">56.7k</div>
+                <div class="metric-label">Km/Mês Total Estimado</div>
+            </div>
+            <div class="metric-card">
+                <div class="metric-number">9.1M</div>
+                <div class="metric-label">Visualizações/Mês Estimadas</div>
+            </div>
+            <div class="metric-card">
+                <div class="metric-number">R$ 3,51</div>
+                <div class="metric-label">CPM Médio Estimado</div>
+            </div>
+            <div class="metric-card">
+                <div class="metric-number">11</div>
+                <div class="metric-label">Cidades Cobertas</div>
+            </div>
+            <div class="metric-card">
+                <div class="metric-number">62</div>
+                <div class="metric-label">Escolas Atendidas</div>
+            </div>
+        </div>
+
+        <!-- Seção de Check-in -->
+        <div class="checkin-section">
+            <div class="simulation-title">
+                📋 Sistema de Check-in das Vans
+            </div>
+            <div class="checkin-form">
+                <div class="form-group">
+                    <label for="citySelect">Selecione a cidade:</label>
+                    <select id="citySelect">
+                        <option value="">-- Escolha uma cidade --</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="vanSelect">Selecione a van:</label>
+                    <select id="vanSelect" disabled>
+                        <option value="">-- Primeiro selecione uma cidade --</option>
+                    </select>
+                </div>
+            </div>
+
+            <div id="vanInfo" class="van-info checkin-section" style="display: none; padding: 20px; margin-top: 20px;">
+                <h3 style="font-size: 1.5rem; margin-bottom: 15px;">Informações da Van Selecionada</h3>
+                <div style="display: flex; gap: 20px; align-items: center; flex-wrap: wrap;">
+                    <img id="vanPhoto" class="van-photo" src="" alt="Foto da Van" style="width: 150px; height: 100px; object-fit: cover; border-radius: 10px; box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);">
+                    <div style="line-height: 1.8;">
+                        <p><strong>Condutor:</strong> <span id="vanDriver"></span></p>
+                        <p><strong>Telefone:</strong> <span id="vanPhone"></span></p>
+                        <p><strong>Placa:</strong> <span id="vanPlate"></span></p>
+                        <p><strong>Endereço da Garagem:</strong> <span id="vanGarage"></span></p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="controls">
+                <button class="btn-checkin" onclick="realizarCheckin()">📍 Realizar Check-in</button>
+                <button class="btn-simulate" onclick="simularTodasRotas()">🚐 Simular Todas as Rotas</button>
+                <button class="btn-clear" onclick="limparMapa()">🧹 Limpar Mapa</button>
+            </div>
+
+            <div id="checkinResult"></div>
+        </div>
+
+        <!-- Seção do Mapa -->
+        <div class="simulation-section">
+            <div class="simulation-title">
+                🗺️ Mapa Interativo das Rotas
+            </div>
+            <div id="map"></div>
+            <div class="status-container">
+                <div id="status" class="default-message">
+                    🗺️ Selecione uma cidade e van para visualizar as rotas e realizar check-in
+                </div>
+            </div>
+        </div>
+
+        <!-- Seção de Detalhamento por Cidade (Cards) -->
+        <div class="cards-section">
+            <div class="section-title">
+                💰 Detalhamento por Cidade
+            </div>
+            <div id="cards-container">
+                <!-- Cards serão gerados aqui pelo JavaScript -->
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let map;
+        let directionsService;
+        let directionsRenderer = [];
+        let markers = [];
+        let currentCity = '';
+        let currentVan = null;
+        let simulationInProgress = false;
+
+        const GOOGLE_MAPS_API_KEY = 'AIzaSyBDKTnVRwJ0CwotEFufK4maf9L0i-27M04';
+        
+        // Ícones serão definidos após o Google Maps carregar
+        let ICON_ESCOLA;
+        let ICON_VAN_INDO;
+
+        // Dados das cidades (carregados do Excel)
+        const cidadesData = {
+  "Inúbia Paulista": {
+    "center": {
+      "lat": -21.7701831,
+      "lng": -50.9616718,
+      "zoom": 14
+    },
+    "vans": [
+      {
+        "condutor": "Tio Michel",
+        "telefone": "14996712945",
+        "placa": "DBA3686",
+        "destino": "Escola Estadual Iraldo Antônio Martins de Toledo; Escola Estadual Carlos Umberto Carrara - PEI",
+        "endereco_garagem": "R. Antonio Facco, 971",
+        "local_fotos": "https://raw.githubusercontent.com/dvpe/Checkin/main/GovSP/InubiaPaulista-DBA3686.jpeg",
+        "escolas": [
+          "Escola Estadual Iraldo Antônio Martins de Toledo",
+          "Escola Estadual Carlos Umberto Carrara - PEI"
+        ]
+      }
+    ],
+    "total_escolas": 2,
+    "escolas_lista": [
+      "Escola Estadual Carlos Umberto Carrara - PEI",
+      "Escola Estadual Iraldo Antônio Martins de Toledo"
+    ]
+  },
+  "Lucelia": {
+    "center": {
+      "lat": -21.7211293,
+      "lng": -51.0188,
+      "zoom": 14
+    },
+    "vans": [
+      {
+        "condutor": "Claudio",
+        "telefone": "18997939864",
+        "placa": "ETU3B55",
+        "destino": "CEALPA Centro de Ensino da Alta Paulista; E.M.E.F Soledade Domingues Iglesia Profa; Escola Adelita Firpo",
+        "endereco_garagem": "Alameda Demétrio Cavlak, 1564 ",
+        "local_fotos": "https://raw.githubusercontent.com/dvpe/Checkin/main/GovSP/Lucelia-ETU3B55.jpg",
+        "escolas": [
+          "CEALPA Centro de Ensino da Alta Paulista",
+          "E.M.E.F Soledade Domingues Iglesia Profa",
+          "Escola Adelita Firpo"
+        ]
+      }
+    ],
+    "total_escolas": 3,
+    "escolas_lista": [
+      "CEALPA Centro de Ensino da Alta Paulista",
+      "E.M.E.F Soledade Domingues Iglesia Profa",
+      "Escola Adelita Firpo"
+    ]
+  },
+  "Adamantina": {
+    "center": {
+      "lat": -21.6866517,
+      "lng": -51.0762975,
+      "zoom": 14
+    },
+    "vans": [
+      {
+        "condutor": "Jose Rodrigo de Freitas Duarte ",
+        "telefone": "18997657571",
+        "placa": "DBA3067",
+        "destino": "Eudecio Luiz Vicente Professor Ete Saint George School Adamantina EE Prof. Durvalino Grion Escola Cristã De Ensino",
+        "endereco_garagem": "Rua Euclides da Cunha, 532",
+        "local_fotos": "https://raw.githubusercontent.com/dvpe/Checkin/main/GovSP/Adamantina-DBA3067.jpg",
+        "escolas": [
+          "Eudecio Luiz Vicente Professor Ete Saint George School Adamantina EE Prof. Durvalino Grion Escola Cristã De Ensino"
+        ]
+      },
+      {
+        "condutor": "Jose Rodrigo de Freitas Duarte ",
+        "telefone": "18997657571",
+        "placa": "ITQ0405",
+        "destino": "Eudecio Luiz Vicente Professor Ete Saint George School Adamantina EE Prof. Durvalino Grion Escola Cristã De Ensino",
+        "endereco_garagem": "Rua Euclides da Cunha, 532",
+        "local_fotos": "https://raw.githubusercontent.com/dvpe/Checkin/main/GovSP/Adamantina-ITQ0H05.jpg",
+        "escolas": [
+          "Eudecio Luiz Vicente Professor Ete Saint George School Adamantina EE Prof. Durvalino Grion Escola Cristã De Ensino"
+        ]
+      },
+      {
+        "condutor": "Jose Rodrigo de Freitas Duarte ",
+        "telefone": "18997657571",
+        "placa": "CXA1599",
+        "destino": "Eudecio Luiz Vicente Professor Ete Saint George School Adamantina EE Prof. Durvalino Grion Escola Cristã De Ensino",
+        "endereco_garagem": "Rua Euclides da Cunha, 532",
+        "local_fotos": "https://raw.githubusercontent.com/dvpe/Checkin/main/GovSP/Adamantina-CXA1599.jpg",
+        "escolas": [
+          "Eudecio Luiz Vicente Professor Ete Saint George School Adamantina EE Prof. Durvalino Grion Escola Cristã De Ensino"
+        ]
+      },
+      {
+        "condutor": "Fabio",
+        "telefone": "18997950968",
+        "placa": "TJJ0F36",
+        "destino": "Escola Estadual Oito de Abril; Saint George School Adamantina",
+        "endereco_garagem": "R. Profa. Noêmia B Vale, 260",
+        "local_fotos": "https://raw.githubusercontent.com/dvpe/Checkin/main/GovSP/Adamantina-TJJ0F36.jpg",
+        "escolas": [
+          "Escola Estadual Oito de Abril",
+          "Saint George School Adamantina"
+        ]
+      },
+      {
+        "condutor": "Fabio",
+        "telefone": "18997950968",
+        "placa": "PYM8141",
+        "destino": "Escola Cristã De Ensino; Saint George School Adamantina; Colégio Adamantinense",
+        "endereco_garagem": "R. Profa. Noêmia B Vale, 260",
+        "local_fotos": "https://raw.githubusercontent.com/dvpe/Checkin/main/GovSP/Adamantina-PYM8141.jpg",
+        "escolas": [
+          "Escola Cristã De Ensino",
+          "Saint George School Adamantina",
+          "Colégio Adamantinense"
+        ]
+      }
+    ],
+    "total_escolas": 5,
+    "escolas_lista": [
+      "Colégio Adamantinense",
+      "Escola Cristã De Ensino",
+      "Escola Estadual Oito de Abril",
+      "Eudecio Luiz Vicente Professor Ete Saint George School Adamantina EE Prof. Durvalino Grion Escola Cristã De Ensino",
+      "Saint George School Adamantina"
+    ]
+  },
+  "Lucélia": {
+    "center": {
+      "lat": -21.7211293,
+      "lng": -51.0188,
+      "zoom": 14
+    },
+    "vans": [
+      {
+        "condutor": "Fabio",
+        "telefone": "18997950968",
+        "placa": "NRP8281",
+        "destino": "Kumon Lucelia; EMEI Prof.° Inah Magosso Martinelli; EMEI Dona Joaninha (+1 mais)",
+        "endereco_garagem": "R. Profa. Noêmia B Vale, 260",
+        "local_fotos": "https://raw.githubusercontent.com/dvpe/Checkin/main/GovSP/Lucelia-NRP8281.jpg",
+        "escolas": [
+          "Kumon Lucelia",
+          "EMEI Prof.° Inah Magosso Martinelli",
+          "EMEI Dona Joaninha",
+          "Escola Estadual Carlos Umberto Carrara"
+        ]
+      },
+      {
+        "condutor": "Claudio Lima ",
+        "telefone": "18 99793-9864",
+        "placa": "DWF1513",
+        "destino": "Escola Soledade Domingues Iglesia Profa; Escola oito de abril; Escola  Eurico Leite (+2 mais)",
+        "endereco_garagem": "Demétrio cavilack 1564",
+        "local_fotos": "https://raw.githubusercontent.com/dvpe/Checkin/main/GovSP/TupiPaulista-DWF1513.jpg",
+        "escolas": [
+          "Escola Soledade Domingues Iglesia Profa",
+          "Escola oito de abril",
+          "Escola  Eurico Leite",
+          "Moacir Simardi Professor Emefi",
+          "Colégio Objetivo de Tupi Paulista"
+        ]
+      },
+      {
+        "condutor": "Claudio Lima ",
+        "telefone": "18 99793-9864",
+        "placa": "DBL3638",
+        "destino": "Saint George School Adamantina; Colégio Dask; Etec (+1 mais)",
+        "endereco_garagem": "Demétrio cavilack 1564",
+        "local_fotos": "https://raw.githubusercontent.com/dvpe/Checkin/main/GovSP/TupiPaulista-DBL3668.jpg",
+        "escolas": [
+          "Saint George School Adamantina",
+          "Colégio Dask",
+          "Etec",
+          "Colégio Objetivo de Tupi Paulista"
+        ]
+      }
+    ],
+    "total_escolas": 12,
+    "escolas_lista": [
+      "Colégio Dask",
+      "Colégio Objetivo de Tupi Paulista",
+      "EMEI Dona Joaninha",
+      "EMEI Prof.° Inah Magosso Martinelli",
+      "Escola  Eurico Leite",
+      "Escola Estadual Carlos Umberto Carrara",
+      "Escola Soledade Domingues Iglesia Profa",
+      "Escola oito de abril",
+      "Etec",
+      "Kumon Lucelia",
+      "Moacir Simardi Professor Emefi",
+      "Saint George School Adamantina"
+    ]
+  },
+  "Pacaembu": {
+    "center": {
+      "lat": -21.566243,
+      "lng": -51.2633114,
+      "zoom": 14
+    },
+    "vans": [
+      {
+        "condutor": "Eduardo Cesar de Oliveira ",
+        "telefone": "18997950968",
+        "placa": "AQR9397",
+        "destino": "ETEC; FATEC",
+        "endereco_garagem": "Av. Rui Barbosa 66",
+        "local_fotos": "https://raw.githubusercontent.com/dvpe/Checkin/main/GovSP/Pacaembu-AQR9397.jpg",
+        "escolas": [
+          "ETEC",
+          "FATEC"
+        ]
+      },
+      {
+        "condutor": "Renato Pereira Redondaro",
+        "telefone": "18996623779",
+        "placa": "EGR7594",
+        "destino": "EMEF Manoel Teixeira; Objetivo Pacaembu",
+        "endereco_garagem": "Av José Galdino dos Santos ",
+        "local_fotos": "https://raw.githubusercontent.com/dvpe/Checkin/main/GovSP/Pacaembu-EGR7594.jpg",
+        "escolas": [
+          "EMEF Manoel Teixeira",
+          "Objetivo Pacaembu"
+        ]
+      }
+    ],
+    "total_escolas": 4,
+    "escolas_lista": [
+      "EMEF Manoel Teixeira",
+      "ETEC",
+      "FATEC",
+      "Objetivo Pacaembu"
+    ]
+  },
+  "Junqueirópolis": {
+    "center": {
+      "lat": -21.5109531,
+      "lng": -51.4351505,
+      "zoom": 14
+    },
+    "vans": [
+      {
+        "condutor": "Reinaldo Bueno",
+        "telefone": "18996211716",
+        "placa": "FKT6I31",
+        "destino": "KUMON; CCAA Junqueiropolis; Escola Estadual Prof º Idene Rodrigues dos Santos",
+        "endereco_garagem": "Rua Sebastiana de Oliveira, 90",
+        "local_fotos": "https://raw.githubusercontent.com/dvpe/Checkin/main/GovSP/Junqueiropolis-FKT6131.jpg",
+        "escolas": [
+          "KUMON",
+          "CCAA Junqueiropolis",
+          "Escola Estadual Prof º Idene Rodrigues dos Santos"
+        ]
+      },
+      {
+        "condutor": "Regis Schieri",
+        "telefone": "18998225045",
+        "placa": "GCQ8A48",
+        "destino": "Escola Estadual Geraldo Pecorari; Centro Educacional Cristo Redentor; Escola Estadual Geraldo Pecorari",
+        "endereco_garagem": "R. Ipiranga, 1173",
+        "local_fotos": "https://raw.githubusercontent.com/dvpe/Checkin/main/GovSP/Junqueiropolis-GCQ8A48.jpg",
+        "escolas": [
+          "Escola Estadual Geraldo Pecorari",
+          "Centro Educacional Cristo Redentor",
+          "Escola Estadual Geraldo Pecorari"
+        ]
+      },
+      {
+        "condutor": "Hadley Boschetti",
+        "telefone": "18997496569",
+        "placa": "OJC0A57",
+        "destino": "Escola Estadual prof Idene Rodrigues dos Santos; Escola Estadual Geraldo Pecorari",
+        "endereco_garagem": "R. Mato Grosso, 65 ",
+        "local_fotos": "https://raw.githubusercontent.com/dvpe/Checkin/main/GovSP/Junqueiropolis-OJC0A57.jpg",
+        "escolas": [
+          "Escola Estadual prof Idene Rodrigues dos Santos",
+          "Escola Estadual Geraldo Pecorari"
+        ]
+      }
+    ],
+    "total_escolas": 6,
+    "escolas_lista": [
+      "CCAA Junqueiropolis",
+      "Centro Educacional Cristo Redentor",
+      "Escola Estadual Geraldo Pecorari",
+      "Escola Estadual Prof º Idene Rodrigues dos Santos",
+      "Escola Estadual prof Idene Rodrigues dos Santos",
+      "KUMON"
+    ]
+  },
+  "Pres. Epitácio": {
+    "center": {
+      "lat": -21.7628,
+      "lng": -52.1158,
+      "zoom": 14
+    },
+    "vans": [
+      {
+        "condutor": "Diogo Luiz Martins da Silva ",
+        "telefone": "18988111711",
+        "placa": "DHS1043",
+        "destino": "Escola Estadual Antônio de Carvalho Leitao; E.E. Consuelo Fernandes de Magalhães Castro Dona; E.E. Marina Amarante Ribeiro Vasques Sanches (+5 mais)",
+        "endereco_garagem": "Rua Rio Branco 35 44 ",
+        "local_fotos": "https://raw.githubusercontent.com/dvpe/Checkin/main/GovSP/PresidenteEpitacio-DHS1043.jpg",
+        "escolas": [
+          "Escola Estadual Antônio de Carvalho Leitao",
+          "E.E. Consuelo Fernandes de Magalhães Castro Dona",
+          "E.E. Marina Amarante Ribeiro Vasques Sanches",
+          "Colégio São Paulo",
+          "E.E. Adelino Chuba Guimaro",
+          "Colégio Anglo",
+          "Doce Saber EMEIF",
+          "Sesi Presidente Epitácio"
+        ]
+      },
+      {
+        "condutor": "Diogo Luiz Martins da Silva ",
+        "telefone": "18988111711",
+        "placa": "DHS1A78",
+        "destino": "Escola Estadual Antônio de Carvalho Leitao; E.E. Consuelo Fernandes de Magalhães Castro Dona; E.E. Marina Amarante Ribeiro Vasques Sanches (+5 mais)",
+        "endereco_garagem": "Rua Rio Branco 35 44 ",
+        "local_fotos": "https://raw.githubusercontent.com/dvpe/Checkin/main/GovSP/PresidenteEpitacio-DHS1A78.jpg",
+        "escolas": [
+          "Escola Estadual Antônio de Carvalho Leitao",
+          "E.E. Consuelo Fernandes de Magalhães Castro Dona",
+          "E.E. Marina Amarante Ribeiro Vasques Sanches",
+          "Colégio São Paulo",
+          "E.E. Adelino Chuba Guimaro",
+          "Colégio Anglo",
+          "Doce Saber EMEIF",
+          "Sesi Presidente Epitácio"
+        ]
+      },
+      {
+        "condutor": "Diogo Luiz Martins da Silva ",
+        "telefone": "18988111711",
+        "placa": "AUF5E93",
+        "destino": "Escola Estadual Antônio de Carvalho Leitao; E.E. Consuelo Fernandes de Magalhães Castro Dona; E.E. Marina Amarante Ribeiro Vasques Sanches (+5 mais)",
+        "endereco_garagem": "Rua Rio Branco 35 44 ",
+        "local_fotos": "https://raw.githubusercontent.com/dvpe/Checkin/main/GovSP/PresidenteEpitacio-AUF5E91.jpg",
+        "escolas": [
+          "Escola Estadual Antônio de Carvalho Leitao",
+          "E.E. Consuelo Fernandes de Magalhães Castro Dona",
+          "E.E. Marina Amarante Ribeiro Vasques Sanches",
+          "Colégio São Paulo",
+          "E.E. Adelino Chuba Guimaro",
+          "Colégio Anglo",
+          "Doce Saber EMEIF",
+          "Sesi Presidente Epitácio"
+        ]
+      },
+      {
+        "condutor": "Fluvio",
+        "telefone": "18981126111",
+        "placa": "HQH6E77",
+        "destino": "Colégio Anglo; Escola Sesi",
+        "endereco_garagem": "R Noel Rosa 550",
+        "local_fotos": "https://raw.githubusercontent.com/dvpe/Checkin/main/GovSP/PresidenteEpitacio-HQH6E77.jpg",
+        "escolas": [
+          "Colégio Anglo",
+          "Escola Sesi"
+        ]
+      },
+      {
+        "condutor": "Fluvio",
+        "telefone": "18981126111",
+        "placa": "CSK 2249",
+        "destino": "Jacinto de Oliveira Campos Professor; Doce Saber Emefei",
+        "endereco_garagem": "R Noel Rosa550",
+        "local_fotos": "https://raw.githubusercontent.com/dvpe/Checkin/main/GovSP/PresidenteEpitacio-CSK2249.jpg",
+        "escolas": [
+          "Jacinto de Oliveira Campos Professor",
+          "Doce Saber Emefei"
+        ]
+      }
+    ],
+    "total_escolas": 11,
+    "escolas_lista": [
+      "Colégio Anglo",
+      "Colégio São Paulo",
+      "Doce Saber EMEIF",
+      "Doce Saber Emefei",
+      "E.E. Adelino Chuba Guimaro",
+      "E.E. Consuelo Fernandes de Magalhães Castro Dona",
+      "E.E. Marina Amarante Ribeiro Vasques Sanches",
+      "Escola Estadual Antônio de Carvalho Leitao",
+      "Escola Sesi",
+      "Jacinto de Oliveira Campos Professor",
+      "Sesi Presidente Epitácio"
+    ]
+  },
+  "Panorama": {
+    "center": {
+      "lat": -21.3611651,
+      "lng": -51.8574008,
+      "zoom": 14
+    },
+    "vans": [
+      {
+        "condutor": "Cesar",
+        "telefone": "18998234193",
+        "placa": "NZD0G02",
+        "destino": "Cólegio Objetivo e Escola Municial Abener Augusto Pires",
+        "endereco_garagem": "R. Jonas Dias dos Santos, 71",
+        "local_fotos": "https://raw.githubusercontent.com/dvpe/Checkin/main/GovSP/Panorama-NZD0G02.jpg",
+        "escolas": [
+          "Cólegio Objetivo e Escola Municial Abener Augusto Pires"
+        ]
+      }
+    ],
+    "total_escolas": 1,
+    "escolas_lista": [
+      "Cólegio Objetivo e Escola Municial Abener Augusto Pires"
+    ]
+  },
+  "Paulicéia": {
+    "center": {
+      "lat": -21.3143975,
+      "lng": -51.8316259,
+      "zoom": 14
+    },
+    "vans": [
+      {
+        "condutor": "James",
+        "telefone": "18991314621",
+        "placa": "HSE7C82",
+        "destino": "Orlando Guirado; Eduacare e Giberto Barros",
+        "endereco_garagem": "Rua Jaíro Corneta 665",
+        "local_fotos": "https://raw.githubusercontent.com/dvpe/Checkin/main/GovSP/Pauliceia-HSE7C82.jpg",
+        "escolas": [
+          "Orlando Guirado",
+          "Eduacare e Giberto Barros"
+        ]
+      }
+    ],
+    "total_escolas": 2,
+    "escolas_lista": [
+      "Eduacare e Giberto Barros",
+      "Orlando Guirado"
+    ]
+  },
+  "Dracena": {
+    "center": {
+      "lat": -21.4835523,
+      "lng": -51.5334408,
+      "zoom": 14
+    },
+    "vans": [
+      {
+        "condutor": "Tio Vlad",
+        "telefone": "18981560402",
+        "placa": "ESU6I78",
+        "destino": "Colégio Anglo; Colégio Dask",
+        "endereco_garagem": "R. Francisco Fernandes Sanches, 67",
+        "local_fotos": "https://raw.githubusercontent.com/dvpe/Checkin/main/GovSP/Dracena-ESU6I78.jpg",
+        "escolas": [
+          "Colégio Anglo",
+          "Colégio Dask"
+        ]
+      },
+      {
+        "condutor": "Renato",
+        "telefone": "18996623779",
+        "placa": "BPZ3488",
+        "destino": "Etec; Escola Izaura Sampaio",
+        "endereco_garagem": "Av. José Galdino dos Santos 613",
+        "local_fotos": "https://raw.githubusercontent.com/dvpe/Checkin/main/GovSP/Dracena-BPZ3488.jpg",
+        "escolas": [
+          "Etec",
+          "Escola Izaura Sampaio"
+        ]
+      },
+      {
+        "condutor": "Renato",
+        "telefone": "18996623779",
+        "placa": "AEL2525",
+        "destino": "Colégio Anglo; ETEC",
+        "endereco_garagem": "Av. José Galdino dos Santos 613",
+        "local_fotos": "https://raw.githubusercontent.com/dvpe/Checkin/main/GovSP/Dracena-AEL2525.jpg",
+        "escolas": [
+          "Colégio Anglo",
+          "ETEC"
+        ]
+      },
+      {
+        "condutor": "Antonio ",
+        "telefone": "18996212136",
+        "placa": "BEF8H85",
+        "destino": "Escola Izaura Sampaio e Colégio São Paulo",
+        "endereco_garagem": "R. Deputado Castro de Carvalho 420",
+        "local_fotos": "https://raw.githubusercontent.com/dvpe/Checkin/main/GovSP/Dracena-BEF8H85.jpg",
+        "escolas": [
+          "Escola Izaura Sampaio e Colégio São Paulo"
+        ]
+      }
+    ],
+    "total_escolas": 6,
+    "escolas_lista": [
+      "Colégio Anglo",
+      "Colégio Dask",
+      "ETEC",
+      "Escola Izaura Sampaio",
+      "Escola Izaura Sampaio e Colégio São Paulo",
+      "Etec"
+    ]
+  },
+  "Osvaldo Cruz": {
+    "center": {
+      "lat": -21.7962773,
+      "lng": -50.879119,
+      "zoom": 14
+    },
+    "vans": [
+      {
+        "condutor": "Bruno Barreto",
+        "telefone": "18997139462",
+        "placa": "FJX4438",
+        "destino": "Benjamin constant; Escola Sesi; Escola Estadual dom Bosco",
+        "endereco_garagem": "Av. Felipe Carmona 12",
+        "local_fotos": "https://raw.githubusercontent.com/dvpe/Checkin/main/GovSP/OsvaldoCruz-FJX4439.jpg",
+        "escolas": [
+          "Benjamin constant",
+          "Escola Sesi",
+          "Escola Estadual dom Bosco"
+        ]
+      },
+      {
+        "condutor": "Milton Ramão Cunha ",
+        "telefone": "18996160979",
+        "placa": "KWO8B08",
+        "destino": "Colégio Apolo; Escola Sesi; Escola Getulio Vargas",
+        "endereco_garagem": "Rua 7 de setembro 105",
+        "local_fotos": "https://raw.githubusercontent.com/dvpe/Checkin/main/GovSP/OsvaldoCruz-KWO8B08.jpg",
+        "escolas": [
+          "Colégio Apolo",
+          "Escola Sesi",
+          "Escola Getulio Vargas"
+        ]
+      },
+      {
+        "condutor": "José Nivaldo Duarte",
+        "telefone": "18998013959",
+        "placa": "EYO3255",
+        "destino": "Etec Amim Jundi; Escola Max Wirth",
+        "endereco_garagem": "Travessa Ametista, 95",
+        "local_fotos": "https://raw.githubusercontent.com/dvpe/Checkin/main/GovSP/OsvaldoCruz-EYO3255.jpg",
+        "escolas": [
+          "Etec Amim Jundi",
+          "Escola Max Wirth"
+        ]
+      },
+      {
+        "condutor": "Valdir Ferreira Pessoa  ",
+        "telefone": "18997302831",
+        "placa": "FFW6177",
+        "destino": "Colégio Objetivo; Escola Sesi; Colégio Posicruz",
+        "endereco_garagem": "Rua jaciro gumieiro 30",
+        "local_fotos": "https://raw.githubusercontent.com/dvpe/Checkin/main/GovSP/OsvaldoCruz-FFW6177.jpg",
+        "escolas": [
+          "Colégio Objetivo",
+          "Escola Sesi",
+          "Colégio Posicruz"
+        ]
+      },
+      {
+        "condutor": "Fabio da silva",
+        "telefone": "18 99649-4849",
+        "placa": "CYN4B32",
+        "destino": "Etec e Benjamin Constant",
+        "endereco_garagem": "Rua Luiz de Souza 65",
+        "local_fotos": "https://raw.githubusercontent.com/dvpe/Checkin/main/GovSP/Osvaldo Cruz-CYN4B31.jpg",
+        "escolas": [
+          "Etec e Benjamin Constant"
+        ]
+      }
+    ],
+    "total_escolas": 10,
+    "escolas_lista": [
+      "Benjamin constant",
+      "Colégio Apolo",
+      "Colégio Objetivo",
+      "Colégio Posicruz",
+      "Escola Estadual dom Bosco",
+      "Escola Getulio Vargas",
+      "Escola Max Wirth",
+      "Escola Sesi",
+      "Etec Amim Jundi",
+      "Etec e Benjamin Constant"
+    ]
+  }
+};
+
+        // Inicializar o mapa
+        function initMap() {
+            // Definir ícones com tamanho ajustado
+            ICON_ESCOLA = {
+                url: 'https://raw.githubusercontent.com/dvpe/Checkin/main/icones/escola.png',
+                scaledSize: new google.maps.Size(32, 32),
+                origin: new google.maps.Point(0, 0),
+                anchor: new google.maps.Point(16, 16)
+            };
+            
+            ICON_VAN_INDO = {
+                url: 'https://raw.githubusercontent.com/dvpe/Checkin/main/icones/indo.png',
+                scaledSize: new google.maps.Size(40, 40),
+                origin: new google.maps.Point(0, 0),
+                anchor: new google.maps.Point(20, 20)
+            };
+            
+            map = new google.maps.Map(document.getElementById('map'), {
+                center: { lat: -21.6, lng: -51.2 },
+                zoom: 9,
+                mapTypeId: 'roadmap'
+            });
+
+            directionsService = new google.maps.DirectionsService();
+
+            // Preencher dropdown de cidades
+            const citySelect = document.getElementById('citySelect');
+            Object.keys(cidadesData).sort().forEach(cidade => {
+                const option = document.createElement('option');
+                option.value = cidade;
+                option.textContent = cidade;
+                citySelect.appendChild(option);
+            });
+
+            // Gerar cards das cidades
+            gerarCards();
+        }
+
+        // Quando seleciona uma cidade
+        document.getElementById('citySelect').addEventListener('change', function() {
+            const cidade = this.value;
+            currentCity = cidade;
+
+            const vanSelect = document.getElementById('vanSelect');
+            vanSelect.innerHTML = '<option value="">-- Escolha uma van --</option>';
+
+            if (cidade && cidadesData[cidade]) {
+                vanSelect.disabled = false;
+                const vans = cidadesData[cidade].vans;
+
+                vans.forEach((van, index) => {
+                    const option = document.createElement('option');
+                    option.value = index;
+                    option.textContent = `${van.placa} - ${van.condutor}`;
+                    vanSelect.appendChild(option);
+                });
+
+                // Centralizar mapa na cidade
+                const center = cidadesData[cidade].center;
+                map.setCenter({ lat: center.lat, lng: center.lng });
+                map.setZoom(center.zoom);
+            } else {
+                vanSelect.disabled = true;
+                document.getElementById('vanInfo').style.display = 'none';
+            }
+        });
+
+        // Quando seleciona uma van
+        document.getElementById('vanSelect').addEventListener('change', function() {
+            const vanIndex = this.value;
+
+            if (vanIndex !== '' && currentCity && cidadesData[currentCity]) {
+                currentVan = cidadesData[currentCity].vans[vanIndex];
+
+                // Mostrar informações da van
+                document.getElementById('vanPhoto').src = currentVan.local_fotos;
+                document.getElementById('vanDriver').textContent = currentVan.condutor;
+                document.getElementById('vanPhone').textContent = currentVan.telefone;
+                document.getElementById('vanPlate').textContent = currentVan.placa;
+                document.getElementById('vanGarage').textContent = currentVan.endereco_garagem;
+                document.getElementById('vanInfo').style.display = 'block';
+            } else {
+                document.getElementById('vanInfo').style.display = 'none';
+                currentVan = null;
+            }
+        });
+
+        // Realizar check-in
+        function realizarCheckin() {
+            if (!currentCity || !currentVan) {
+                alert('Por favor, selecione uma cidade e uma van primeiro!');
+                return;
+            }
+
+            limparMapa();
+
+            const status = document.getElementById('status');
+            status.innerHTML = `<strong>🚐 Check-in realizado!</strong><br>Van ${currentVan.placa} - ${currentVan.condutor}<br>Cidade: ${currentCity}`;
+
+            // Adicionar marcador da garagem
+            const garagemAddress = currentVan.endereco_garagem + ', ' + currentCity + ', SP, Brasil';
+
+            const geocoder = new google.maps.Geocoder();
+            geocoder.geocode({ address: garagemAddress }, function(results, status) {
+                if (status === 'OK') {
+                    const garagemLocation = results[0].geometry.location;
+
+                    // Marcador da garagem
+                    const garagemMarker = new google.maps.Marker({
+                        position: garagemLocation,
+                        map: map,
+                        icon: ICON_VAN_INDO,
+                        title: 'Garagem - ' + currentVan.endereco_garagem
+                    });
+                    markers.push(garagemMarker);
+
+                    // Adicionar marcadores das escolas e traçar rotas
+                    currentVan.escolas.forEach((escola, index) => {
+                        const escolaAddress = escola + ', ' + currentCity + ', SP, Brasil';
+
+                        geocoder.geocode({ address: escolaAddress }, function(results, statusGeo) {
+                            if (statusGeo === 'OK') {
+                                const escolaLocation = results[0].geometry.location;
+                                
+                                // Marcador da escola
+                                const escolaMarker = new google.maps.Marker({
+                                    position: escolaLocation,
+                                    map: map,
+                                    icon: ICON_ESCOLA,
+                                    title: escola
+                                });
+                                markers.push(escolaMarker);
+                                
+                                // Traçar rota da garagem até a escola
+                                const directionsServiceRoute = new google.maps.DirectionsService();
+                                const renderer = new google.maps.DirectionsRenderer({
+                                    map: map,
+                                    suppressMarkers: true,
+                                    polylineOptions: {
+                                        strokeColor: '#3b82f6',
+                                        strokeOpacity: 0.7,
+                                        strokeWeight: 4
+                                    }
+                                });
+                                
+                                directionsServiceRoute.route({
+                                    origin: garagemLocation,
+                                    destination: escolaLocation,
+                                    travelMode: google.maps.TravelMode.DRIVING
+                                }, function(result, statusRoute) {
+                                    if (statusRoute === 'OK') {
+                                        renderer.setDirections(result);
+                                        directionsRenderer.push(renderer);
+                                    }
+                                });
+                            }
+                        });
+                    });
+
+                    // Centralizar no local da garagem
+                    map.setCenter(garagemLocation);
+                    map.setZoom(14);
+                } else {
+                    alert('Não foi possível geocodificar o endereço da garagem.');
+                }
+            });
+        }
+
+        // Simular todas as rotas
+        function simularTodasRotas() {
+            if (simulationInProgress) {
+                alert('Simulação já em andamento!');
+                return;
+            }
+
+            limparMapa();
+            simulationInProgress = true;
+
+            const status = document.getElementById('status');
+            status.innerHTML = '<strong>🔄 Simulando todas as rotas...</strong>';
+
+            let processedCities = 0;
+            const totalCities = Object.keys(cidadesData).length;
+
+            let vanCounter = 0;
+            Object.entries(cidadesData).forEach(([cidade, data]) => {
+                data.vans.forEach((van, vanIndex) => {
+                    const vanColor = `hsl(${(vanCounter * 360 / 31)}, 70%, 50%)`;
+                    vanCounter++;
+                    
+                    setTimeout(() => {
+                        const garagemAddress = van.endereco_garagem + ', ' + cidade + ', SP, Brasil';
+                        const geocoder = new google.maps.Geocoder();
+
+                        geocoder.geocode({ address: garagemAddress }, function(results, statusGeo) {
+                            if (statusGeo === 'OK') {
+                                const garagemLocation = results[0].geometry.location;
+
+                                // Marcador da garagem
+                                const marker = new google.maps.Marker({
+                                    position: garagemLocation,
+                                    map: map,
+                                    icon: ICON_VAN_INDO,
+                                    title: `${cidade} - ${van.placa}`
+                                });
+                                markers.push(marker);
+                                
+                                // Traçar rota para a primeira escola
+                                if (van.escolas && van.escolas.length > 0) {
+                                    const primeiraEscola = van.escolas[0];
+                                    const escolaAddress = primeiraEscola + ', ' + cidade + ', SP, Brasil';
+                                    
+                                    geocoder.geocode({ address: escolaAddress }, function(resultsEscola, statusEscola) {
+                                        if (statusEscola === 'OK') {
+                                            const escolaLocation = resultsEscola[0].geometry.location;
+                                            
+                                            // Marcador da escola
+                                            const escolaMarker = new google.maps.Marker({
+                                                position: escolaLocation,
+                                                map: map,
+                                                icon: ICON_ESCOLA,
+                                                title: primeiraEscola
+                                            });
+                                            markers.push(escolaMarker);
+                                            
+                                            // Traçar rota
+                                            const directionsServiceRoute = new google.maps.DirectionsService();
+                                            const renderer = new google.maps.DirectionsRenderer({
+                                                map: map,
+                                                suppressMarkers: true,
+                                                polylineOptions: {
+                                                    strokeColor: vanColor,
+                                                    strokeOpacity: 0.6,
+                                                    strokeWeight: 3
+                                                }
+                                            });
+                                            
+                                            directionsServiceRoute.route({
+                                                origin: garagemLocation,
+                                                destination: escolaLocation,
+                                                travelMode: google.maps.TravelMode.DRIVING
+                                            }, function(result, statusRoute) {
+                                                if (statusRoute === 'OK') {
+                                                    renderer.setDirections(result);
+                                                    directionsRenderer.push(renderer);
+                                                }
+                                            });
+                                        }
+                                    });
+                                }
+                            }
+                        });
+                    }, vanCounter * 300);
+                });
+
+                processedCities++;
+                if (processedCities === totalCities) {
+                    setTimeout(() => {
+                        simulationInProgress = false;
+                        status.innerHTML = `<strong>✅ Simulação concluída!</strong><br>${totalCities} cidades e ${vanCounter} vans mapeadas com rotas reais.`;
+                    }, (vanCounter * 300) + 2000);
+                }
+            });
+
+            // Ajustar zoom para mostrar todas as cidades
+            map.setCenter({ lat: -21.6, lng: -51.2 });
+            map.setZoom(9);
+        }
+
+        // Limpar mapa
+        function limparMapa() {
+            markers.forEach(marker => marker.setMap(null));
+            markers = [];
+
+            directionsRenderer.forEach(renderer => renderer.setMap(null));
+            directionsRenderer = [];
+
+            document.getElementById('status').innerHTML = '🗺️ Mapa limpo. Selecione uma cidade e van para começar.';
+        }
+
+        // Gerar cards das cidades
+        function gerarCards() {
+            const container = document.getElementById('cards-container');
+            container.innerHTML = '';
+
+            Object.entries(cidadesData).sort().forEach(([cidade, data]) => {
+                const card = document.createElement('div');
+                card.className = 'city-card';
+
+                let vansHTML = '';
+                data.vans.forEach(van => {
+                    const escolasListHTML = van.escolas.map(e => `<li>${e}</li>`).join('');
+
+                    vansHTML += `
+                        <div class="van-gallery-item">
+                            <img src="${van.local_fotos}" alt="Van ${van.placa}" class="van-gallery-photo">
+                            <div class="van-gallery-info">
+                                <strong>Placa:</strong> ${van.placa}<br>
+                                <strong>Condutor:</strong> ${van.condutor}<br>
+                                <strong>Telefone:</strong> ${van.telefone}<br>
+                                <strong>Garagem:</strong> ${van.endereco_garagem}
+                                <details class="escolas-dropdown">
+                                    <summary>Ver Escolas (${van.escolas.length})</summary>
+                                    <div class="escolas-list">
+                                        <ul>${escolasListHTML}</ul>
+                                    </div>
+                                </details>
+                            </div>
+                        </div>
+                    `;
+                });
+
+                card.innerHTML = `
+                    <div class="city-header">
+                        <div class="city-name">${cidade}</div>
+                        <div class="vehicle-count">${data.vans.length} veículo(s) • ${data.total_escolas} escola(s)</div>
+                    </div>
+                    <div class="vans-gallery">
+                        ${vansHTML}
+                    </div>
+                `;
+
+                container.appendChild(card);
+            });
+        }
+    </script>
+
+    <script async defer src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBDKTnVRwJ0CwotEFufK4maf9L0i-27M04&callback=initMap"></script>
+</body>
+
+</html>
