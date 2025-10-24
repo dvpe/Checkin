@@ -6,7 +6,94 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Sistema Check-in Unimed - Campanha Escolas Araucária 2025</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@100..900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
+        /* Loading Screen */
+        #loading-screen {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, #00a859 0%, #00d170 100%);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            z-index: 9999;
+            transition: opacity 0.5s ease, visibility 0.5s ease;
+        }
+
+        #loading-screen.hidden {
+            opacity: 0;
+            visibility: hidden;
+        }
+
+        .loader {
+            width: 80px;
+            height: 80px;
+            border: 8px solid rgba(255, 255, 255, 0.2);
+            border-top: 8px solid white;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .loading-text {
+            margin-top: 30px;
+            font-size: 1.5rem;
+            font-weight: 600;
+            animation: pulse 1.5s ease-in-out infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+
+        .loading-progress {
+            margin-top: 20px;
+            font-size: 1.2rem;
+            font-weight: 500;
+        }
+
+        /* Animações de entrada */
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        @keyframes scaleIn {
+            from {
+                opacity: 0;
+                transform: scale(0.9);
+            }
+            to {
+                opacity: 1;
+                transform: scale(1);
+            }
+        }
+
+        .animate-on-load {
+            opacity: 0;
+            animation: fadeInUp 0.8s ease forwards;
+        }
+
         /* Reset e Configurações Básicas */
         * {
             margin: 0;
@@ -44,6 +131,7 @@
 
         /* Estilo do Cabeçalho */
         .header {
+            animation-delay: 0.1s;
             text-align: center;
             margin-bottom: 40px;
             background: rgba(255, 255, 255, 0.15);
@@ -62,6 +150,11 @@
             padding: 20px;
             border-radius: 15px;
             box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+            transition: transform 0.3s ease;
+        }
+
+        .logo:hover {
+            transform: scale(1.05) rotate(2deg);
         }
 
         .header h1 {
@@ -83,6 +176,7 @@
             font-weight: 800;
             margin-top: 15px;
             text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+            animation: pulse 2s ease-in-out infinite;
         }
 
         /* Métricas */
@@ -101,6 +195,19 @@
             text-align: center;
             box-shadow: 0 15px 40px rgba(0, 0, 0, 0.15);
             border: 2px solid rgba(255, 255, 255, 0.3);
+            transition: all 0.3s ease;
+            animation-delay: 0.2s;
+        }
+
+        .metric-card:hover {
+            transform: translateY(-10px) scale(1.05);
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.25);
+        }
+
+        .metric-icon {
+            font-size: 2rem;
+            margin-bottom: 15px;
+            opacity: 0.8;
         }
 
         .metric-number {
@@ -119,6 +226,7 @@
 
         /* Estilo da Seção de Check-in */
         .checkin-section {
+            animation-delay: 0.3s;
             background: rgba(255, 255, 255, 0.15);
             backdrop-filter: blur(20px);
             border-radius: 25px;
@@ -198,6 +306,10 @@
             box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
         }
 
+        .controls button:active {
+            transform: scale(0.95);
+        }
+
         .btn-checkin {
             background: linear-gradient(45deg, #10b981, #059669);
             color: white;
@@ -206,6 +318,7 @@
         .btn-checkin:hover {
             background: linear-gradient(45deg, #059669, #047857);
             transform: translateY(-3px);
+            box-shadow: 0 8px 25px rgba(16, 185, 129, 0.4);
         }
 
         .btn-simulate {
@@ -236,6 +349,7 @@
             margin-top: 20px;
             background: rgba(255, 255, 255, 0.1);
             border-radius: 15px;
+            animation: fadeIn 0.5s ease;
         }
 
         .van-photo {
@@ -245,10 +359,16 @@
             border-radius: 10px;
             background: white;
             padding: 10px;
+            transition: transform 0.3s ease;
+        }
+
+        .van-photo:hover {
+            transform: scale(1.1);
         }
 
         /* Mapa */
         .simulation-section {
+            animation-delay: 0.4s;
             background: rgba(255, 255, 255, 0.15);
             backdrop-filter: blur(20px);
             border-radius: 25px;
@@ -282,8 +402,37 @@
             font-size: 1.1rem;
         }
 
+        /* Legenda de Cores */
+        .route-legend {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 15px;
+            justify-content: center;
+            margin-top: 20px;
+            padding: 15px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 12px;
+        }
+
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 0.9rem;
+            padding: 5px 12px;
+            background: rgba(255, 255, 255, 0.15);
+            border-radius: 8px;
+        }
+
+        .legend-color {
+            width: 30px;
+            height: 4px;
+            border-radius: 2px;
+        }
+
         /* Estilo da Seção de Cards */
         .cards-section {
+            animation-delay: 0.5s;
             margin-top: 40px;
         }
 
@@ -309,6 +458,7 @@
             box-shadow: 0 15px 40px rgba(0, 0, 0, 0.2);
             border: 2px solid #00d170;
             transition: transform 0.3s ease;
+            animation: scaleIn 0.6s ease;
         }
 
         .city-card:hover {
@@ -349,13 +499,14 @@
             border-radius: 15px;
             overflow: hidden;
             box-shadow: 0 8px 20px rgba(0, 0, 0, 0.08);
-            transition: box-shadow 0.3s ease;
+            transition: all 0.3s ease;
             display: flex;
             flex-direction: column;
         }
 
         .van-gallery-item:hover {
             box-shadow: 0 12px 30px rgba(0, 0, 0, 0.15);
+            transform: translateY(-5px);
         }
 
         .van-gallery-photo {
@@ -401,10 +552,12 @@
         .escolas-dropdown summary::after {
             content: ' ▼';
             font-size: 0.8em;
+            transition: transform 0.3s ease;
         }
 
         .escolas-dropdown[open] summary::after {
-            content: ' ▲';
+            transform: rotate(180deg);
+            display: inline-block;
         }
 
         .escolas-list ul {
@@ -441,46 +594,50 @@
 <body>
     <div class="container">
         <!-- Cabeçalho -->
-        <div class="header">
+        <div class="header animate-on-load">
             <img src="https://raw.githubusercontent.com/dvpe/Checkin/refs/heads/main/logos/Unimed.png" alt="Logo Unimed" class="logo">
-            <h1>Sistema de Check-in - Campanha Unimed</h1>
-            <p>📍 Escolas de Araucária</p>
-            <p>📅 Campanha 2025</p>
-            <p class="valor-destaque">💰 Investimento Total: R$ 13.068,00</p>
+            <h1><i class="fas fa-heartbeat"></i> Campanha Unimed</h1>
+            <p><i class="fas fa-map-marker-alt"></i> Escolas de Araucária</p>
+            <p><i class="fas fa-calendar-alt"></i> Campanha 2025</p>
+            <p class="valor-destaque"><i class="fas fa-dollar-sign"></i> Investimento Total: R$ 13.068,00</p>
         </div>
 
         <!-- Métricas -->
         <div class="metrics-container">
-            <div class="metric-card">
+            <div class="metric-card animate-on-load">
+                <div class="metric-icon"><i class="fas fa-van-shuttle"></i></div>
                 <div class="metric-number">11</div>
                 <div class="metric-label">Total de Veículos</div>
             </div>
-            <div class="metric-card">
+            <div class="metric-card animate-on-load">
+                <div class="metric-icon"><i class="fas fa-school"></i></div>
                 <div class="metric-number">51</div>
                 <div class="metric-label">Escolas Atendidas</div>
             </div>
-            <div class="metric-card">
-                <div class="metric-number">1</div>
-                <div class="metric-label">Cidade Coberta</div>
+            <div class="metric-card animate-on-load">
+                <div class="metric-icon"><i class="fas fa-eye"></i></div>
+                <div class="metric-number">3.2M</div>
+                <div class="metric-label">impactos</div>
             </div>
-            <div class="metric-card">
-                <div class="metric-number">R$ 1.188</div>
-                <div class="metric-label">Investimento por Van</div>
+            <div class="metric-card animate-on-load">
+                <div class="metric-icon"><i class="fas fa-chart-line"></i></div>
+                <div class="metric-number">R$ 4,08</div>
+                <div class="metric-label">Cpm</div>
             </div>
         </div>
 
         <!-- Seção de Check-in -->
-        <div class="checkin-section">
-            <h2 class="simulation-title">📋 Sistema de Check-in das Vans</h2>
+        <div class="checkin-section animate-on-load">
+            <h2 class="simulation-title"><i class="fas fa-clipboard-check"></i> Sistema de Check-in das Vans</h2>
             <div class="checkin-form">
                 <div class="form-group">
-                    <label for="citySelect">Selecione a Cidade:</label>
+                    <label for="citySelect"><i class="fas fa-city"></i> Selecione a Cidade:</label>
                     <select id="citySelect">
-                        <option value="">-- Escolha uma cidade --</option>
+                        <option value="Araucaria">-- Escolha uma cidade --</option>
                     </select>
                 </div>
                 <div class="form-group">
-                    <label for="vanSelect">Selecione a Van:</label>
+                    <label for="vanSelect"><i class="fas fa-van-shuttle"></i> Selecione a Van:</label>
                     <select id="vanSelect" disabled>
                         <option value="">-- Primeiro selecione uma cidade --</option>
                     </select>
@@ -488,39 +645,43 @@
             </div>
 
             <div id="vanInfo" class="van-info">
-                <h3 style="font-size: 1.5rem; margin-bottom: 15px;">Informações da Van Selecionada</h3>
+                <h3 style="font-size: 1.5rem; margin-bottom: 15px;"><i class="fas fa-info-circle"></i> Informações da Van Selecionada</h3>
                 <div style="display: flex; gap: 20px; align-items: center; flex-wrap: wrap;">
                     <img id="vanPhoto" class="van-photo" src="" alt="Foto da Van">
                     <div style="line-height: 1.8;">
-                        <p><strong>Condutor:</strong> <span id="vanDriver"></span></p>
-                        <p><strong>Telefone:</strong> <span id="vanPhone"></span></p>
-                        <p><strong>Placa:</strong> <span id="vanPlate"></span></p>
-                        <p><strong>Endereço da Garagem:</strong> <span id="vanGarage"></span></p>
+                        <p><strong><i class="fas fa-user"></i> Condutor:</strong> <span id="vanDriver"></span></p>
+                        <p><strong><i class="fas fa-phone"></i> Telefone:</strong> <span id="vanPhone"></span></p>
+                        <p><strong><i class="fas fa-id-card"></i> Placa:</strong> <span id="vanPlate"></span></p>
+                        <p><strong><i class="fas fa-home"></i> Endereço da Garagem:</strong> <span id="vanGarage"></span></p>
                     </div>
                 </div>
             </div>
 
             <div class="controls">
-                <button class="btn-checkin" onclick="realizarCheckin()">📍 Realizar Check-in</button>
-                <button class="btn-simulate" onclick="simularTodasRotas()">🚐 Simular Todas as Rotas</button>
-                <button class="btn-clear" onclick="limparMapa()">🧹 Limpar Mapa</button>
+                <button class="btn-simulate" onclick="simularTodasRotas()">
+                    <i class="fas fa-route"></i> Simular Todas as Rotas
+                </button>
+                <button class="btn-clear" onclick="limparMapa()">
+                    <i class="fas fa-broom"></i> Limpar Mapa
+                </button>
             </div>
         </div>
 
         <!-- Seção do Mapa -->
-        <div class="simulation-section">
-            <h2 class="simulation-title">🗺️ Mapa Interativo das Rotas</h2>
+        <div class="simulation-section animate-on-load">
+            <h2 class="simulation-title"><i class="fas fa-map"></i> Mapa Interativo das Rotas</h2>
             <div id="map"></div>
+            <div id="route-legend" class="route-legend" style="display: none;"></div>
             <div class="status-container">
                 <div id="status">
-                    🗺️ Selecione uma cidade e van para visualizar as rotas e realizar check-in
+                    <i class="fas fa-info-circle"></i> Selecione uma cidade e van para visualizar as rotas e realizar check-in
                 </div>
             </div>
         </div>
 
         <!-- Seção de Cards -->
-        <div class="cards-section">
-            <h2 class="section-title">📊 Detalhamento por Cidade</h2>
+        <div class="cards-section animate-on-load">
+            <h2 class="section-title"><i class="fas fa-chart-bar"></i> Detalhamento por Cidade</h2>
             <div id="cards-container"></div>
         </div>
     </div>
@@ -533,10 +694,17 @@
         let currentCity = '';
         let currentVan = null;
         let simulationInProgress = false;
+        let imagesLoaded = 0;
+        let totalImages = 0;
 
         const GOOGLE_MAPS_API_KEY = 'AIzaSyBDKTnVRwJ0CwotEFufK4maf9L0i-27M04';
-        const ICON_ESCOLA = 'https://raw.githubusercontent.com/dvpe/Checkin/main/icones/escola.png';
-        const ICON_VAN_INDO = 'https://raw.githubusercontent.com/dvpe/Checkin/main/icones/indo.png';
+
+        // Cores diferentes para cada van
+        const routeColors = [
+            '#FF6B6B', '#4ECDC4', '#45B7D1', '#FFA07A', '#98D8C8',
+            '#F7DC6F', '#BB8FCE', '#85C1E2', '#F8B739', '#52B788',
+            '#E63946'
+        ];
 
         // Dados da campanha Unimed
         const cidadesData = {
@@ -651,7 +819,147 @@
             }
         };
 
-        // Inicializar o mapa
+        
+        // Pré-carregar imagens
+        function preloadImages() {
+            const images = [];
+            
+            // Logo
+            images.push('https://raw.githubusercontent.com/dvpe/Checkin/refs/heads/main/logos/Unimed.png');
+            
+            // Fotos das vans
+            Object.values(cidadesData).forEach(cidade => {
+                cidade.vans.forEach(van => {
+                    if (van.local_fotos) {
+                        images.push(van.local_fotos);
+                    }
+                });
+            });
+
+            totalImages = images.length;
+            
+            images.forEach(src => {
+                const img = new Image();
+                img.onload = () => {
+                    imagesLoaded++;
+                    updateLoadingProgress();
+                };
+                img.onerror = () => {
+                    imagesLoaded++;
+                    updateLoadingProgress();
+                };
+                img.src = src;
+            });
+        }
+
+        function updateLoadingProgress() {
+            const progress = Math.round((imagesLoaded / totalImages) * 100);
+            document.getElementById('loading-progress').textContent = progress + '%';
+            
+            if (imagesLoaded >= totalImages) {
+                setTimeout(() => {
+                    document.getElementById('loading-screen').classList.add('hidden');
+                }, 500);
+            }
+        }
+
+        // Criar ícone SVG de van
+        function createVanIcon(color) {
+            return {
+                path: 'M17.402,0H5.643C2.526,0,0,3.467,0,6.584v34.804c0,3.116,2.526,5.644,5.643,5.644h11.759c3.116,0,5.644-2.527,5.644-5.644 V6.584C23.044,3.467,20.518,0,17.402,0z M22.057,14.188v11.665l-2.729,0.351v-4.806L22.057,14.188z M20.625,10.773 c-1.016,3.9-2.219,8.51-2.219,8.51H4.638l-2.222-8.51C2.417,10.773,11.3,7.755,20.625,10.773z M3.748,21.713v4.492l-2.73-0.349 V14.502L3.748,21.713z M1.018,37.938V27.579l2.73,0.343v8.196L1.018,37.938z M2.575,40.882l2.218-3.336h13.771l2.219,3.336H2.575z M19.328,35.805v-7.872l2.729-0.355v10.048L19.328,35.805z',
+                fillColor: color,
+                fillOpacity: 1,
+                strokeColor: '#ffffff',
+                strokeWeight: 2,
+                scale: 0.8,
+                anchor: new google.maps.Point(11, 23)
+            };
+        }
+
+        // Criar ícone de escola
+        function createSchoolIcon() {
+            return {
+                path: 'M12 2L2 7v10c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V7l-10-5zm0 2.18l8 3.6v8.55c0 4.47-3.05 8.64-8 9.64-4.95-1-8-5.17-8-9.64V7.78l8-3.6z M12 6c-2.21 0-4 1.79-4 4s1.79 4 4 4 4-1.79 4-4-1.79-4-4-4zm0 2c1.1 0 2 .9 2 2s-.9 2-2 2-2-.9-2-2 .9-2 2-2z',
+                fillColor: '#FF6B35',
+                fillOpacity: 1,
+                strokeColor: '#ffffff',
+                strokeWeight: 2,
+                scale: 1.2,
+                anchor: new google.maps.Point(12, 12)
+            };
+        }
+
+
+        // Pré-carregar imagens
+        function preloadImages() {
+            const images = [];
+            
+            // Logo
+            images.push('https://raw.githubusercontent.com/dvpe/Checkin/refs/heads/main/logos/Unimed.png');
+            
+            // Fotos das vans
+            Object.values(cidadesData).forEach(cidade => {
+                cidade.vans.forEach(van => {
+                    if (van.local_fotos) {
+                        images.push(van.local_fotos);
+                    }
+                });
+            });
+
+            totalImages = images.length;
+            
+            images.forEach(src => {
+                const img = new Image();
+                img.onload = () => {
+                    imagesLoaded++;
+                    updateLoadingProgress();
+                };
+                img.onerror = () => {
+                    imagesLoaded++;
+                    updateLoadingProgress();
+                };
+                img.src = src;
+            });
+        }
+
+        function updateLoadingProgress() {
+            const progress = Math.round((imagesLoaded / totalImages) * 100);
+            document.getElementById('loading-progress').textContent = progress + '%';
+            
+            if (imagesLoaded >= totalImages) {
+                setTimeout(() => {
+                    document.getElementById('loading-screen').classList.add('hidden');
+                }, 500);
+            }
+        }
+
+        // Criar ícone SVG de van
+        function createVanIcon(color) {
+            return {
+                path: 'M17.402,0H5.643C2.526,0,0,3.467,0,6.584v34.804c0,3.116,2.526,5.644,5.643,5.644h11.759c3.116,0,5.644-2.527,5.644-5.644 V6.584C23.044,3.467,20.518,0,17.402,0z M22.057,14.188v11.665l-2.729,0.351v-4.806L22.057,14.188z M20.625,10.773 c-1.016,3.9-2.219,8.51-2.219,8.51H4.638l-2.222-8.51C2.417,10.773,11.3,7.755,20.625,10.773z M3.748,21.713v4.492l-2.73-0.349 V14.502L3.748,21.713z M1.018,37.938V27.579l2.73,0.343v8.196L1.018,37.938z M2.575,40.882l2.218-3.336h13.771l2.219,3.336H2.575z M19.328,35.805v-7.872l2.729-0.355v10.048L19.328,35.805z',
+                fillColor: color,
+                fillOpacity: 1,
+                strokeColor: '#ffffff',
+                strokeWeight: 2,
+                scale: 0.8,
+                anchor: new google.maps.Point(11, 23)
+            };
+        }
+
+        // Criar ícone de escola
+        function createSchoolIcon() {
+            return {
+                path: 'M12 2L2 7v10c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V7l-10-5zm0 2.18l8 3.6v8.55c0 4.47-3.05 8.64-8 9.64-4.95-1-8-5.17-8-9.64V7.78l8-3.6z M12 6c-2.21 0-4 1.79-4 4s1.79 4 4 4 4-1.79 4-4-1.79-4-4-4zm0 2c1.1 0 2 .9 2 2s-.9 2-2 2-2-.9-2-2 .9-2 2-2z',
+                fillColor: '#FF6B35',
+                fillOpacity: 1,
+                strokeColor: '#ffffff',
+                strokeWeight: 2,
+                scale: 1.2,
+                anchor: new google.maps.Point(12, 12)
+            };
+        }
+
+// Inicializar o mapa
         function initMap() {
             map = new google.maps.Map(document.getElementById('map'), {
                 center: { lat: -25.5934, lng: -49.4094 },
@@ -733,7 +1041,9 @@
             limparMapa();
 
             const status = document.getElementById('status');
-            status.innerHTML = `<strong>🚐 Check-in realizado!</strong><br>Van ${currentVan.placa} - ${currentVan.condutor}<br>Cidade: ${currentCity}`;
+            const vanIndex = cidadesData[currentCity].vans.indexOf(currentVan);
+            const routeColor = routeColors[vanIndex % routeColors.length];
+            status.innerHTML = `<strong><i class=\"fas fa-spinner fa-spin\"></i> Processando check-in...</strong>`;
 
             // Adicionar marcador da garagem
             const garagemAddress = currentVan.endereco_garagem + ', ' + currentCity + ', PR, Brasil';
@@ -747,13 +1057,9 @@
                     const garagemMarker = new google.maps.Marker({
                         position: garagemLocation,
                         map: map,
-                        icon: {
-                            url: ICON_VAN_INDO,
-                            scaledSize: new google.maps.Size(40, 40),
-                            origin: new google.maps.Point(0, 0),
-                            anchor: new google.maps.Point(20, 20)
-                        },
-                        title: 'Garagem - ' + currentVan.endereco_garagem
+                        icon: createVanIcon(routeColor),
+                        title: 'Garagem - ' + currentVan.endereco_garagem,
+                        animation: google.maps.Animation.DROP
                     });
                     markers.push(garagemMarker);
 
@@ -767,19 +1073,15 @@
                                 const escolaMarker = new google.maps.Marker({
                                     position: results[0].geometry.location,
                                     map: map,
-                                    icon: {
-                                        url: ICON_ESCOLA,
-                                        scaledSize: new google.maps.Size(35, 35),
-                                        origin: new google.maps.Point(0, 0),
-                                        anchor: new google.maps.Point(17, 17)
-                                    },
+                                    icon: createSchoolIcon(),
                                     title: escola,
                                     label: {
                                         text: String(index + 1),
                                         color: 'white',
                                         fontWeight: 'bold',
                                         fontSize: '12px'
-                                    }
+                                    },
+                                    animation: google.maps.Animation.DROP
                                 });
                                 markers.push(escolaMarker);
 
@@ -791,7 +1093,8 @@
 
                                 // Quando todas as escolas forem geocodificadas, traçar a rota
                                 if (waypoints.length === currentVan.escolas.length) {
-                                    tracarRota(garagemLocation, waypoints);
+                                    tracarRota(garagemLocation, waypoints, routeColor);
+                                    document.getElementById('status').innerHTML = `<strong><i class=\"fas fa-check-circle\"></i> Check-in realizado!</strong><br>Van ${currentVan.placa} - ${currentVan.condutor}<br>Cidade: ${currentCity}`;
                                 }
                             }
                         });
@@ -807,16 +1110,16 @@
         }
 
         // Traçar rota
-        function tracarRota(origem, waypoints) {
+        function tracarRota(origem, waypoints, color) {
             if (waypoints.length === 0) return;
 
             const renderer = new google.maps.DirectionsRenderer({
                 map: map,
                 suppressMarkers: true,
                 polylineOptions: {
-                    strokeColor: '#00a859',
-                    strokeWeight: 4,
-                    strokeOpacity: 0.7
+                    strokeColor: color,
+                    strokeWeight: 5,
+                    strokeOpacity: 0.8
                 }
             });
             directionsRenderer.push(renderer);
@@ -847,10 +1150,28 @@
             simulationInProgress = true;
 
             const status = document.getElementById('status');
-            status.innerHTML = '<strong>🔄 Simulando todas as rotas...</strong>';
+            status.innerHTML = '<strong><i class="fas fa-spinner fa-spin"></i> Simulando todas as rotas...</strong>';
+
+            const legendContainer = document.getElementById('route-legend');
+            legendContainer.innerHTML = '';
+            legendContainer.style.display = 'flex';
+
+            let processedVans = 0;
+            const totalVans = cidadesData.Araucaria.vans.length;
 
             Object.entries(cidadesData).forEach(([cidade, data]) => {
                 data.vans.forEach((van, vanIndex) => {
+                    const routeColor = routeColors[vanIndex % routeColors.length];
+                    
+                    // Adicionar à legenda
+                    const legendItem = document.createElement('div');
+                    legendItem.className = 'legend-item';
+                    legendItem.innerHTML = `
+                        <div class="legend-color" style="background-color: ${routeColor};"></div>
+                        <span>${van.placa}</span>
+                    `;
+                    legendContainer.appendChild(legendItem);
+
                     setTimeout(() => {
                         const garagemAddress = van.endereco_garagem + ', ' + cidade + ', PR, Brasil';
                         const geocoder = new google.maps.Geocoder();
@@ -862,24 +1183,16 @@
                                 const marker = new google.maps.Marker({
                                     position: garagemLocation,
                                     map: map,
-                                    icon: {
-                                        url: ICON_VAN_INDO,
-                                        scaledSize: new google.maps.Size(40, 40),
-                                        origin: new google.maps.Point(0, 0),
-                                        anchor: new google.maps.Point(20, 20)
-                                    },
+                                    icon: createVanIcon(routeColor),
                                     title: `${cidade} - ${van.placa}`,
-                                    label: {
-                                        text: van.placa,
-                                        color: 'white',
-                                        fontWeight: 'bold',
-                                        fontSize: '10px'
-                                    }
+                                    animation: google.maps.Animation.DROP
                                 });
                                 markers.push(marker);
 
                                 // Adicionar marcadores das escolas
                                 let waypoints = [];
+                                let processedSchools = 0;
+                                
                                 van.escolas.forEach((escola) => {
                                     const escolaAddress = escola + ', ' + cidade + ', PR, Brasil';
                                     geocoder.geocode({ address: escolaAddress }, function(results, status) {
@@ -887,13 +1200,9 @@
                                             const escolaMarker = new google.maps.Marker({
                                                 position: results[0].geometry.location,
                                                 map: map,
-                                                icon: {
-                                                    url: ICON_ESCOLA,
-                                                    scaledSize: new google.maps.Size(30, 30),
-                                                    origin: new google.maps.Point(0, 0),
-                                                    anchor: new google.maps.Point(15, 15)
-                                                },
-                                                title: escola
+                                                icon: createSchoolIcon(),
+                                                title: escola,
+                                                animation: google.maps.Animation.DROP
                                             });
                                             markers.push(escolaMarker);
 
@@ -902,22 +1211,26 @@
                                                 stopover: true
                                             });
 
-                                            if (waypoints.length === van.escolas.length) {
-                                                tracarRota(garagemLocation, waypoints);
+                                            processedSchools++;
+                                            if (processedSchools === van.escolas.length) {
+                                                tracarRota(garagemLocation, waypoints, routeColor);
                                             }
                                         }
                                     });
                                 });
+
+                                processedVans++;
+                                if (processedVans === totalVans) {
+                                    setTimeout(() => {
+                                        simulationInProgress = false;
+                                        status.innerHTML = `<strong><i class="fas fa-check-circle"></i> Simulação concluída!</strong><br>Todas as ${totalVans} rotas foram mapeadas.`;
+                                    }, 2000);
+                                }
                             }
                         });
-                    }, vanIndex * 500);
+                    }, vanIndex * 300);
                 });
             });
-
-            setTimeout(() => {
-                simulationInProgress = false;
-                status.innerHTML = `<strong>✅ Simulação concluída!</strong><br>Todas as rotas foram mapeadas.`;
-            }, 3000);
         }
 
         // Limpar mapa
@@ -928,7 +1241,8 @@
             directionsRenderer.forEach(renderer => renderer.setMap(null));
             directionsRenderer = [];
 
-            document.getElementById('status').innerHTML = '🗺️ Mapa limpo. Selecione uma cidade e van para começar.';
+            document.getElementById('route-legend').style.display = 'none';
+            document.getElementById('status').innerHTML = '<i class=\"fas fa-info-circle\"></i> Mapa limpo. Selecione uma cidade e van para começar.';
         }
 
         // Gerar cards das cidades
@@ -948,12 +1262,12 @@
                         <div class="van-gallery-item">
                             <img src="${van.local_fotos}" alt="Van ${van.placa}" class="van-gallery-photo" onerror="this.style.display='none'">
                             <div class="van-gallery-info">
-                                <strong>Placa:</strong> ${van.placa}<br>
-                                <strong>Condutor:</strong> ${van.condutor}<br>
-                                <strong>Telefone:</strong> ${van.telefone}<br>
-                                <strong>Garagem:</strong> ${van.endereco_garagem}
+                                <strong><i class="fas fa-id-card"></i> Placa:</strong> ${van.placa}<br>
+                                <strong><i class="fas fa-user"></i> Condutor:</strong> ${van.condutor}<br>
+                                <strong><i class="fas fa-phone"></i> Telefone:</strong> ${van.telefone}<br>
+                                <strong><i class="fas fa-home"></i> Garagem:</strong> ${van.endereco_garagem}
                                 <details class="escolas-dropdown">
-                                    <summary>Ver Escolas (${van.escolas.length})</summary>
+                                    <summary><i class="fas fa-school"></i> Ver Escolas (${van.escolas.length})</summary>
                                     <div class="escolas-list">
                                         <ul>${escolasListHTML}</ul>
                                     </div>
@@ -965,8 +1279,8 @@
 
                 card.innerHTML = `
                     <div class="city-header">
-                        <div class="city-name">${cidade}</div>
-                        <div class="vehicle-count">${data.vans.length} veículo(s) • ${data.total_escolas} escola(s)</div>
+                        <div class="city-name"><i class="fas fa-city"></i> <i class="fas fa-city"></i> ${cidade}</div>
+                        <div class="vehicle-count"><i class="fas fa-van-shuttle"></i> <i class="fas fa-van-shuttle"></i> ${data.vans.length} veículo(s) • <i class="fas fa-school"></i> <i class="fas fa-school"></i> ${data.total_escolas} escola(s)</div>
                     </div>
                     <div class="vans-gallery">
                         ${vansHTML}
@@ -978,7 +1292,19 @@
         }
     </script>
 
-    <script async defer src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBDKTnVRwJ0CwotEFufK4maf9L0i-27M04&callback=initMap"></script>
+    <script async defer src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBDKTnVRwJ0CwotEFufK4maf9L0i-27M04&callback=initMap">
+        // Inicializar ao carregar
+        window.addEventListener('load', () => {
+            preloadImages();
+        });
+
+    
+        // Inicializar ao carregar
+        window.addEventListener('load', () => {
+            preloadImages();
+        });
+
+    </script>
 </body>
 
 </html>
