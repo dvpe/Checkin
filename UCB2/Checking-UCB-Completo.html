@@ -1,0 +1,1998 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sistema Checking UCB - Universidade Católica de Brasília - 2025</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        /* Reset e Configurações Básicas */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: linear-gradient(135deg, #0099CC 0%, #003366 25%, #0099CC 50%, #0099CC 75%, #003366 100%);
+            color: white;
+            min-height: 100vh;
+            padding: 20px;
+            position: relative;
+            overflow-x: hidden;
+        }
+
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: 
+                radial-gradient(circle at 20% 50%, rgba(255, 255, 255, 0.05) 0%, transparent 50%),
+                radial-gradient(circle at 80% 80%, rgba(255, 255, 255, 0.05) 0%, transparent 50%),
+                url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><defs><pattern id="grid" width="10" height="10" patternUnits="userSpaceOnUse"><path d="M 10 0 L 0 0 0 10" fill="none" stroke="rgba(255,255,255,0.03)" stroke-width="0.5"/></pattern></defs><rect width="100" height="100" fill="url(%23grid)"/></svg>');
+            z-index: -1;
+            animation: backgroundPulse 10s ease-in-out infinite;
+        }
+
+        @keyframes backgroundPulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.8; }
+        }
+
+        /* Loading Screen */
+        #loading-screen {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, #0099CC 0%, #003366 100%);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            z-index: 9999;
+            transition: opacity 0.5s ease, visibility 0.5s ease;
+        }
+
+        #loading-screen.hidden {
+            opacity: 0;
+            visibility: hidden;
+        }
+
+        .loader {
+            width: 100px;
+            height: 100px;
+            border: 10px solid rgba(255, 255, 255, 0.1);
+            border-top: 10px solid #ffffff;
+            border-radius: 50%;
+            animation: spin 1.2s cubic-bezier(0.5, 0, 0.5, 1) infinite;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .loading-text {
+            margin-top: 40px;
+            font-size: 1.8rem;
+            font-weight: 700;
+            animation: pulse 1.5s ease-in-out infinite;
+            text-shadow: 0 0 20px rgba(255, 255, 255, 0.5);
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; transform: scale(1); }
+            50% { opacity: 0.7; transform: scale(1.05); }
+        }
+
+        .loading-progress {
+            margin-top: 25px;
+            font-size: 1.4rem;
+            font-weight: 600;
+            color: #ffffff;
+        }
+
+        /* Animações de entrada */
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(40px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        @keyframes scaleIn {
+            from {
+                opacity: 0;
+                transform: scale(0.85);
+            }
+            to {
+                opacity: 1;
+                transform: scale(1);
+            }
+        }
+
+        .animate-on-load {
+            opacity: 0;
+            animation: fadeInUp 1s ease forwards;
+        }
+
+        .container {
+            max-width: 1600px;
+            margin: 0 auto;
+            position: relative;
+            z-index: 1;
+        }
+
+        /* Estilo do Cabeçalho */
+        .header {
+            text-align: center;
+            margin-bottom: 50px;
+            background: rgba(255, 255, 255, 0.12);
+            backdrop-filter: blur(30px);
+            border-radius: 30px;
+            padding: 50px;
+            border: 3px solid rgba(255, 255, 255, 0.25);
+            box-shadow: 
+                0 25px 50px rgba(0, 0, 0, 0.3),
+                inset 0 1px 0 rgba(255, 255, 255, 0.2);
+            animation-delay: 0.1s;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .header::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(255, 255, 255, 0.1) 0%, transparent 70%);
+            animation: headerGlow 8s linear infinite;
+        }
+
+        @keyframes headerGlow {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .logo {
+            width: 350px;
+            height: auto;
+            margin-bottom: 30px;
+            background: white;
+            padding: 25px;
+            border-radius: 20px;
+            box-shadow: 
+                0 15px 40px rgba(0, 0, 0, 0.3),
+                0 0 40px rgba(255, 255, 255, 0.3);
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            position: relative;
+            z-index: 1;
+        }
+
+        .logo:hover {
+            transform: scale(1.1) rotate(3deg);
+            box-shadow: 
+                0 20px 60px rgba(0, 0, 0, 0.4),
+                0 0 60px rgba(255, 255, 255, 0.5);
+        }
+
+        .header h1 {
+            font-size: 3.5rem;
+            margin-bottom: 20px;
+            text-shadow: 
+                3px 3px 8px rgba(0, 0, 0, 0.5),
+                0 0 30px rgba(255, 255, 255, 0.3);
+            font-weight: 900;
+            position: relative;
+            z-index: 1;
+        }
+
+        .header p {
+            font-size: 1.5rem;
+            opacity: 0.95;
+            margin-bottom: 10px;
+            font-weight: 500;
+            position: relative;
+            z-index: 1;
+        }
+
+        .valor-destaque {
+            font-size: 3rem;
+            font-weight: 900;
+            margin-top: 20px;
+            text-shadow: 
+                3px 3px 6px rgba(0, 0, 0, 0.4),
+                0 0 20px rgba(255, 255, 255, 0.5);
+            animation: pulseGlow 2.5s ease-in-out infinite;
+            color: #ffffff;
+            position: relative;
+            z-index: 1;
+        }
+
+        @keyframes pulseGlow {
+            0%, 100% { 
+                transform: scale(1);
+                text-shadow: 
+                    3px 3px 6px rgba(0, 0, 0, 0.4),
+                    0 0 20px rgba(255, 255, 255, 0.5);
+            }
+            50% { 
+                transform: scale(1.05);
+                text-shadow: 
+                    3px 3px 6px rgba(0, 0, 0, 0.4),
+                    0 0 40px rgba(255, 255, 255, 0.8);
+            }
+        }
+
+        /* Métricas */
+        .metrics-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 30px;
+            margin-bottom: 50px;
+        }
+
+        .metric-card {
+            background: linear-gradient(145deg, rgba(255, 255, 255, 0.15), rgba(255, 255, 255, 0.05));
+            backdrop-filter: blur(20px);
+            color: white;
+            padding: 40px;
+            border-radius: 25px;
+            text-align: center;
+            box-shadow: 
+                0 20px 50px rgba(0, 0, 0, 0.2),
+                inset 0 1px 0 rgba(255, 255, 255, 0.3);
+            border: 2px solid rgba(255, 255, 255, 0.2);
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            animation-delay: 0.2s;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .metric-card:hover {
+            transform: translateY(-15px) scale(1.05);
+            box-shadow: 
+                0 30px 70px rgba(0, 0, 0, 0.3),
+                0 0 40px rgba(255, 255, 255, 0.4),
+                inset 0 1px 0 rgba(255, 255, 255, 0.4);
+            border-color: rgba(255, 255, 255, 0.5);
+        }
+
+        .metric-icon {
+            font-size: 3rem;
+            margin-bottom: 20px;
+            opacity: 0.9;
+            color: #ffffff;
+            text-shadow: 0 0 20px rgba(255, 255, 255, 0.5);
+        }
+
+        .metric-number {
+            font-size: 3.5rem;
+            font-weight: 900;
+            margin-bottom: 15px;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+        }
+
+        .metric-label {
+            font-size: 1.2rem;
+            opacity: 0.9;
+            font-weight: 500;
+        }
+
+        /* Carrossel de Fotos */
+        .carousel-container {
+            position: relative;
+            width: 300px;
+            height: 200px;
+            overflow: hidden;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+        }
+
+        .carousel-photo {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            position: absolute;
+            top: 0;
+            left: 0;
+            opacity: 0;
+            transition: opacity 0.5s ease-in-out;
+        }
+
+        .carousel-photo.active {
+            opacity: 1;
+        }
+
+        .carousel-indicators {
+            position: absolute;
+            bottom: 10px;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            gap: 8px;
+            z-index: 10;
+        }
+
+        .carousel-indicator {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.5);
+            transition: all 0.3s ease;
+        }
+
+        .carousel-indicator.active {
+            background: #ffffff;
+            width: 30px;
+            border-radius: 5px;
+        }
+
+        /* Seção de Checking */
+        .checkin-section {
+            background: rgba(255, 255, 255, 0.12);
+            backdrop-filter: blur(30px);
+            border-radius: 30px;
+            padding: 50px;
+            margin-bottom: 50px;
+            border: 3px solid rgba(255, 255, 255, 0.25);
+            box-shadow: 
+                0 25px 50px rgba(0, 0, 0, 0.3),
+                inset 0 1px 0 rgba(255, 255, 255, 0.2);
+        }
+
+        .simulation-title {
+            font-size: 2.5rem;
+            font-weight: 900;
+            margin-bottom: 30px;
+            text-align: center;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+        }
+
+        .checkin-form {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 30px;
+            margin-bottom: 30px;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .form-group label {
+            font-size: 1.2rem;
+            font-weight: 600;
+            margin-bottom: 10px;
+            color: white;
+        }
+
+        .form-group select {
+            padding: 15px;
+            font-size: 1.1rem;
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            border-radius: 15px;
+            background: rgba(255, 255, 255, 0.9);
+            color: #0099CC;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .form-group select:hover {
+            border-color: rgba(255, 255, 255, 0.6);
+            background: rgba(255, 255, 255, 1);
+        }
+
+        .form-group select:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .van-info {
+            background: rgba(255, 255, 255, 0.95);
+            color: #0099CC;
+            padding: 30px;
+            border-radius: 20px;
+            margin-bottom: 30px;
+            display: none;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+        }
+
+        .van-info.active {
+            display: block;
+            animation: scaleIn 0.5s ease;
+        }
+
+        .controls {
+            display: flex;
+            gap: 20px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .btn-simulate, .btn-clear {
+            padding: 18px 40px;
+            font-size: 1.2rem;
+            font-weight: 700;
+            border: none;
+            border-radius: 15px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .btn-simulate {
+            background: linear-gradient(135deg, #ffffff 0%, #f0f0f0 100%);
+            color: #0099CC;
+        }
+
+        .btn-simulate:hover {
+            background: linear-gradient(135deg, #f0f0f0 0%, #ffffff 100%);
+            transform: translateY(-3px);
+            box-shadow: 0 12px 30px rgba(0, 0, 0, 0.3);
+        }
+
+        .btn-clear {
+            background: linear-gradient(135deg, #ff6b6b 0%, #ee5a52 100%);
+            color: white;
+        }
+
+        .btn-clear:hover {
+            background: linear-gradient(135deg, #ee5a52 0%, #ff6b6b 100%);
+            transform: translateY(-3px);
+            box-shadow: 0 12px 30px rgba(255, 0, 0, 0.3);
+        }
+
+        /* Seção do Mapa */
+        .simulation-section {
+            background: rgba(255, 255, 255, 0.12);
+            backdrop-filter: blur(30px);
+            border-radius: 30px;
+            padding: 50px;
+            margin-bottom: 50px;
+            border: 3px solid rgba(255, 255, 255, 0.25);
+            box-shadow: 
+                0 25px 50px rgba(0, 0, 0, 0.3),
+                inset 0 1px 0 rgba(255, 255, 255, 0.2);
+        }
+
+        #map {
+            width: 100%;
+            height: 600px;
+            border-radius: 20px;
+            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.3);
+            margin-bottom: 20px;
+        }
+
+        .route-legend {
+            background: rgba(255, 255, 255, 0.95);
+            color: #0099CC;
+            padding: 20px;
+            border-radius: 15px;
+            margin-bottom: 20px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+        }
+
+        .route-legend h3 {
+            font-size: 1.5rem;
+            margin-bottom: 15px;
+            font-weight: 700;
+        }
+
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            margin-bottom: 10px;
+            font-size: 1.1rem;
+        }
+
+        .legend-color {
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            border: 3px solid white;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+        }
+
+        .status-container {
+            background: rgba(255, 255, 255, 0.95);
+            color: #0099CC;
+            padding: 20px;
+            border-radius: 15px;
+            text-align: center;
+            font-size: 1.2rem;
+            font-weight: 600;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+        }
+
+        /* Seção de Cards */
+        .cards-section {
+            margin-bottom: 50px;
+        }
+
+        .section-title {
+            font-size: 2.5rem;
+            font-weight: 900;
+            margin-bottom: 40px;
+            text-align: center;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+        }
+
+        #cards-container {
+            display: grid;
+            gap: 40px;
+        }
+
+        .city-card {
+            background: linear-gradient(145deg, rgba(255, 255, 255, 0.98), rgba(255, 255, 255, 0.95));
+            color: #0099CC;
+            padding: 40px;
+            border-radius: 30px;
+            box-shadow: 
+                0 20px 50px rgba(0, 0, 0, 0.25),
+                inset 0 1px 0 rgba(255, 255, 255, 0.5);
+            border: 3px solid #0099CC;
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            animation: scaleIn 0.8s ease;
+        }
+
+        .city-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 
+                0 30px 70px rgba(0, 0, 0, 0.35),
+                0 0 50px rgba(255, 255, 255, 0.3);
+            border-color: #ffffff;
+        }
+
+        .city-header {
+            border-bottom: 4px solid #ffe5e7;
+            padding-bottom: 20px;
+            margin-bottom: 30px;
+        }
+
+        .city-name {
+            font-size: 3rem;
+            font-weight: 900;
+            color: #0099CC;
+            line-height: 1.2;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        .vehicle-count {
+            font-size: 1.4rem;
+            font-weight: 700;
+            color: #0099CC;
+            margin-top: 10px;
+        }
+
+        /* Galeria de Vans */
+        .vans-gallery {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 30px;
+        }
+
+        .van-gallery-item {
+            background: #ffffff;
+            border: 2px solid #ffe5e7;
+            border-radius: 20px;
+            overflow: hidden;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            display: flex;
+            flex-direction: column;
+        }
+
+        .van-gallery-item:hover {
+            box-shadow: 
+                0 20px 50px rgba(0, 0, 0, 0.2),
+                0 0 30px rgba(255, 255, 255, 0.2);
+            transform: translateY(-10px);
+            border-color: #ffffff;
+        }
+
+        .van-gallery-carousel {
+            width: 100%;
+            height: 250px;
+            position: relative;
+            overflow: hidden;
+            background: #f5f5f5;
+        }
+
+        .van-gallery-carousel img {
+            cursor: pointer;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            position: absolute;
+            top: 0;
+            left: 0;
+            opacity: 0;
+            transition: opacity 0.5s ease-in-out;
+        }
+
+        .van-gallery-carousel img.active {
+            opacity: 1;
+        }
+
+        .van-gallery-info {
+            padding: 25px;
+            font-size: 1.05rem;
+            line-height: 1.8;
+            color: #0099CC;
+        }
+
+        .van-gallery-info strong {
+            color: #003366;
+        }
+
+        .van-gallery-info i {
+            color: #0099CC;
+            margin-right: 8px;
+        }
+
+        /* Dropdown de Escolas */
+        .escolas-dropdown {
+            margin-top: 15px;
+            border-top: 2px solid #ffe5e7;
+            padding: 15px 0 0 0;
+            color: #0099CC;
+        }
+
+        .escolas-dropdown summary {
+            font-weight: 700;
+            cursor: pointer;
+            list-style: none;
+            padding: 10px 0;
+            transition: all 0.3s ease;
+            font-size: 1.1rem;
+        }
+
+        .escolas-dropdown summary:hover {
+            color: #0099CC;
+            transform: translateX(5px);
+        }
+
+        .escolas-dropdown summary::after {
+            content: ' ▼';
+            font-size: 0.9em;
+            transition: transform 0.3s ease;
+            display: inline-block;
+        }
+
+        .escolas-dropdown[open] summary::after {
+            transform: rotate(180deg);
+        }
+
+        .escolas-list ul {
+            margin-top: 15px;
+            padding-left: 30px;
+        }
+
+        .escolas-list li {
+            margin: 8px 0;
+            color: #0099CC;
+            font-weight: 500;
+        }
+
+        /* Modal de Imagem */
+        .image-modal {
+            display: none;
+            position: fixed;
+            z-index: 10000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.95);
+            animation: fadeIn 0.3s ease;
+        }
+
+        .image-modal.active {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .modal-content-img {
+            max-width: 90%;
+            max-height: 90%;
+            object-fit: contain;
+            border-radius: 15px;
+            box-shadow: 0 0 50px rgba(255, 255, 255, 0.5);
+            animation: scaleIn 0.4s ease;
+        }
+
+        .modal-close {
+            position: absolute;
+            top: 30px;
+            right: 50px;
+            color: white;
+            font-size: 50px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-shadow: 0 0 10px rgba(0, 0, 0, 0.8);
+            z-index: 10001;
+        }
+
+        .modal-close:hover {
+            color: #0099CC;
+            transform: scale(1.2) rotate(90deg);
+        }
+
+        /* Responsividade */
+        @media (max-width: 768px) {
+            .header h1 {
+                font-size: 2.2rem;
+            }
+
+            .logo {
+                width: 250px;
+            }
+
+            .metric-card {
+                padding: 30px;
+            }
+
+            .checkin-section, .simulation-section {
+                padding: 30px;
+            }
+
+            .simulation-title, .section-title {
+                font-size: 2rem;
+            }
+
+            #map {
+                height: 400px;
+            }
+
+            .vans-gallery {
+                grid-template-columns: 1fr;
+            }
+
+            .controls {
+                flex-direction: column;
+            }
+
+            .btn-simulate, .btn-clear {
+                width: 100%;
+            }
+
+            .valor-destaque {
+                font-size: 2rem;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <!-- Loading Screen -->
+    <div id="loading-screen">
+        <div class="loader"></div>
+        <div class="loading-text">Carregando Sistema</div>
+        <div class="loading-progress" id="loading-progress">0%</div>
+    </div>
+
+    <div class="container">
+        <!-- Cabeçalho -->
+        <div class="header animate-on-load">
+            <img src="https://files.manuscdn.com/user_upload_by_module/session_file/310519663091561059/GDViytQxVULPtReV.png" alt="UCB" style="max-height: 80px; width: auto;">
+            <h1>Sistema de Checking</h1>
+            <p>Campanha Escolas UCB - Todas as Cidades</p>
+            <p style="font-size: 1.2rem; margin-top: 15px;">Ano 2025</p>
+            
+        </div>
+
+        <!-- Métricas -->
+        <div class="metrics-container">
+            <div class="metric-card animate-on-load">
+                <div class="metric-icon"><i class="fas fa-bus"></i></div>
+                <div class="metric-number" id="total-vans">0</div>
+                <div class="metric-label">Total de Vans</div>
+            </div>
+            <div class="metric-card animate-on-load">
+                <div class="metric-icon"><i class="fas fa-school"></i></div>
+                <div class="metric-number" id="total-escolas">0</div>
+                <div class="metric-label">Total de Escolas</div>
+            </div>
+            <div class="metric-card animate-on-load">
+                <div class="metric-icon"><i class="fas fa-eye"></i></div>
+                <div class="metric-number" id="total-impacto">0</div>
+                <div class="metric-label">Impacto Total</div>
+            </div>
+            
+        </div>
+
+        <!-- Seção de Checking -->
+        <div class="checkin-section animate-on-load">
+            <h2 class="simulation-title"><i class="fas fa-clipboard-check"></i> Sistema de Checking das Vans</h2>
+            <div class="checkin-form">
+                <div class="form-group">
+                    <label for="citySelect"><i class="fas fa-city"></i> Selecione a Cidade:</label>
+                    <select id="citySelect">
+                        <option value="">-- Escolha uma cidade --</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="vanSelect"><i class="fas fa-van-shuttle"></i> Selecione a Van:</label>
+                    <select id="vanSelect" disabled>
+                        <option value="">-- Primeiro selecione uma cidade --</option>
+                    </select>
+                </div>
+            </div>
+
+            <div id="vanInfo" class="van-info">
+                <h3 style="font-size: 1.8rem; margin-bottom: 20px;"><i class="fas fa-info-circle"></i> Informações da Van Selecionada</h3>
+                <div style="display: flex; gap: 30px; align-items: center; flex-wrap: wrap;">
+                    <div id="vanCarousel" class="carousel-container"></div>
+                    <div style="line-height: 2;">
+                        <p><strong><i class="fas fa-user"></i> Condutor:</strong> <span id="vanDriver"></span></p>
+                        <p><strong><i class="fas fa-phone"></i> Telefone:</strong> <span id="vanPhone"></span></p>
+                        <p><strong><i class="fas fa-id-card"></i> Placa:</strong> <span id="vanPlate"></span></p>
+                        <p><strong><i class="fas fa-home"></i> Endereço da Garagem:</strong> <span id="vanGarage"></span></p>
+                        <p><strong><i class="fas fa-eye"></i> Impacto:</strong> <span id="vanImpact"></span> impressões/mês</p>
+                        <p><strong><i class="fas fa-route"></i> Rota estimada:</strong> <span id="vanRoute"></span> km</p>
+                        <p><strong><i class="fas fa-info-circle"></i> Observações:</strong> <span id="vanObs"></span></p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="controls">
+                <button class="btn-simulate" onclick="simularTodasRotas()">
+                    <i class="fas fa-route"></i> Simular Todas as Rotas
+                </button>
+                <button class="btn-clear" onclick="limparMapa()">
+                    <i class="fas fa-broom"></i> Limpar Mapa
+                </button>
+            </div>
+        </div>
+
+        <!-- Seção do Mapa -->
+        <div class="simulation-section animate-on-load">
+            <h2 class="simulation-title"><i class="fas fa-map"></i> Mapa Interativo das Rotas</h2>
+            <div id="map"></div>
+            <div id="route-legend" class="route-legend" style="display: none;"></div>
+            <div class="status-container">
+                <div id="status">
+                    <i class="fas fa-info-circle"></i> Selecione uma cidade e van para visualizar as rotas
+                </div>
+            </div>
+        </div>
+
+        <!-- Seção de Cards -->
+        <div class="cards-section animate-on-load">
+            <h2 class="section-title"><i class="fas fa-chart-bar"></i> Detalhamento por Cidade</h2>
+            <div id="cards-container"></div>
+        </div>
+    </div>
+
+    <!-- Modal de Imagem -->
+    <div class="image-modal" id="imageModal">
+        <span class="modal-close" onclick="closeImageModal()">&times;</span>
+        <img class="modal-content-img" id="modalImage">
+    </div>
+
+    <script>
+        let map;
+        let directionsService;
+        let directionsRenderer = [];
+        let markers = [];
+        let currentCity = '';
+        let currentVan = null;
+        let simulationInProgress = false;
+        let imagesLoaded = 0;
+        let totalImages = 0;
+        let carouselIntervals = {};
+        let vanCarouselInterval = null;
+
+        const GOOGLE_MAPS_API_KEY = 'AIzaSyBDKTnVRwJ0CwotEFufK4maf9L0i-27M04';
+
+        // Dados da campanha
+        const VALOR_TOTAL = 8015.50;
+        const IMPACTO_POR_VAN = 450000;
+
+        // Cores vibrantes para cada rota
+        const routeColors = [
+            '#FF1744', '#00E676', '#2979FF', '#FF9100',
+            '#E040FB', '#00E5FF', '#FFEA00', '#FF6E40'
+        ];
+
+        // Dados da campanha UCB - Todas as Cidades
+        const cidadesData = {
+  "Palmas": {
+    "center": {
+      "lat": -10.2491,
+      "lng": -48.3243,
+      "zoom": 13
+    },
+    "vans": [
+      {
+        "condutor": "Charles Carvalho Silva",
+        "telefone": "63984740466",
+        "placa": "MWB6I76",
+        "endereco_garagem": "ARSO 131 - Q. 407 Sul Alameda 3 - Plano Diretor Sul, Palmas - TO, 77019-666",
+        "escolas": [
+          "Vinícius de Moraes,Olga Benaraio, Adventista, Henrique Talone, Marista, São Francisco, Any Frank e Militar"
+        ],
+        "local_fotos": [
+          "https://files.manuscdn.com/user_upload_by_module/session_file/310519663091561059/UNjuAJZdAzLeIaNW.jpeg"
+        ],
+        "impacto": 480000,
+        "rota_km": 8,
+        "observacoes": "Rota com 1 escolas"
+      },
+      {
+        "condutor": "Joaquim Antônio Rodrigues Neto",
+        "telefone": "63984248697",
+        "placa": "BAD1B94",
+        "endereco_garagem": "TO-020, Km 11 - Taquaruçu Grande, Palmas - TO, 77249-899",
+        "escolas": [
+          "Escola Municipal Monteiro Lobato - Palmas",
+          "Colégio Albert Einstein - Palmas",
+          "Escola Municipal De Tempo Integral Olga Benário",
+          "Escola de Tempo Integral Vinícius de Moraes - Palmas",
+          "Centro de Ensino Médio Tiradentes - Palmas",
+          "Escola Municipal Darcy Ribeiro"
+        ],
+        "local_fotos": [
+          "https://files.manuscdn.com/user_upload_by_module/session_file/310519663091561059/pgwbJFShzRErwIfc.jpeg"
+        ],
+        "impacto": 2880000,
+        "rota_km": 48,
+        "observacoes": "Rota com 6 escolas"
+      },
+      {
+        "condutor": "Gean Martins de Araújo",
+        "telefone": "6384469722",
+        "placa": "RMA8G68",
+        "endereco_garagem": "1406 sul Alameda 10 lote 19",
+        "escolas": [
+          "ETI Almirante Tamandaré",
+          "EM Antonio Carlos Jobim",
+          "EM Francisca Brandão Ramalho",
+          "CE São Jose",
+          "EM Monteiro Lobato",
+          "CEM Tiradentes",
+          "IPES",
+          "Colégio Albert Einstein",
+          "ETI Vinicius de Morais",
+          "Colégio Batista de Palmas",
+          "Colégio Dom Bosco Original",
+          "COLÉGIO UPERIMM",
+          "EMTI Olga Benário"
+        ],
+        "local_fotos": [
+          "https://files.manuscdn.com/user_upload_by_module/session_file/310519663091561059/cfUpnTZajIWeHwZG.jpeg"
+        ],
+        "impacto": 7680000,
+        "rota_km": 128,
+        "observacoes": "Rota com 16 escolas"
+      },
+      {
+        "condutor": "Gean Martins de Araújo",
+        "telefone": "6384469722",
+        "placa": "PBL5B13",
+        "endereco_garagem": "1406 sul Alameda 10 lote 19",
+        "escolas": [
+          "ETI Almirante Tamandaré",
+          "Escola Municipal Antonio Carlos Jobim",
+          "Escola Municipal Francisca Brandão Ramalho",
+          "Colegio Estadual Sao Jose",
+          "Escola Municipal Monteiro Lobato",
+          "Escola Municipal Degraus do Saber - TO",
+          "Escola Municipal Darcy Ribeiro",
+          "Centro de Ensino Médio Tiradentes",
+          "IPES",
+          "Colégio Albert Einstein",
+          "ETI Vinicius de Morais",
+          "Colégio Batista de Palmas",
+          "Colégio Dom Bosco Original",
+          "COLÉGIO UPERIMM",
+          "EMTI Olga Benário"
+        ],
+        "local_fotos": [
+          "https://files.manuscdn.com/user_upload_by_module/session_file/310519663091561059/MyLkbJLuZTiGtHGd.jpeg"
+        ],
+        "impacto": 7680000,
+        "rota_km": 128,
+        "observacoes": "Rota com 16 escolas"
+      },
+      {
+        "condutor": "Nilton Cezar barreira parente",
+        "telefone": "63984048492",
+        "placa": "RSA5B61",
+        "endereco_garagem": "906 sul alameda:06 Lote:24",
+        "escolas": [
+          "EM Monteiro Lobato",
+          "EM Degraus do Saber - TO",
+          "EMTI Olga Benário",
+          "IPES",
+          "Colégio Militar do Estado do Tocantins"
+        ],
+        "local_fotos": [
+          "https://files.manuscdn.com/user_upload_by_module/session_file/310519663091561059/JVfrilNvivMSWgJN.jpeg"
+        ],
+        "impacto": 2880000,
+        "rota_km": 48,
+        "observacoes": "Rota com 6 escolas"
+      }
+    ]
+  },
+  "Recife": {
+    "center": {
+      "lat": -8.0476,
+      "lng": -34.877,
+      "zoom": 13
+    },
+    "vans": [
+      {
+        "condutor": "Gutemberg Araújo Sotero",
+        "telefone": "81983071923",
+        "placa": "PDG7F00",
+        "endereco_garagem": "Rio Pajeú, 482",
+        "escolas": [
+          "Instituto Santa Rita de Cassia",
+          "Escola Cecília Meireles",
+          "Escola Opção",
+          "Unibaby Escola e Berçário",
+          "Colégio Decisão - Monte Sinai",
+          "Escola Municipal da Iputinga"
+        ],
+        "local_fotos": [
+          "https://files.manuscdn.com/user_upload_by_module/session_file/310519663091561059/xrqncuUASOnChXlZ.jpeg"
+        ],
+        "impacto": 2880000,
+        "rota_km": 48,
+        "observacoes": "Rota com 6 escolas"
+      },
+      {
+        "condutor": "Cláudio Gomes",
+        "telefone": "81996260908",
+        "placa": "RCN2J36",
+        "endereco_garagem": "Rua Cabo Eutropio, 52",
+        "escolas": [
+          "Colégio da Polícia Militar",
+          "SABER PRIME International School"
+        ],
+        "local_fotos": [
+          "https://files.manuscdn.com/user_upload_by_module/session_file/310519663091561059/WTEJmEvdkPvfvaDS.jpeg"
+        ],
+        "impacto": 960000,
+        "rota_km": 16,
+        "observacoes": "Rota com 2 escolas"
+      },
+      {
+        "condutor": "Milson Antônio de Souza Gorgonho",
+        "telefone": "81987509194",
+        "placa": "OYV7C13",
+        "endereco_garagem": "Rua Caxambú 12",
+        "escolas": [
+          "Colégio da Polícia Militar"
+        ],
+        "local_fotos": [
+          "https://files.manuscdn.com/user_upload_by_module/session_file/310519663091561059/jmqeumvtpnaSbvxW.jpeg"
+        ],
+        "impacto": 480000,
+        "rota_km": 8,
+        "observacoes": "Rota com 1 escolas"
+      },
+      {
+        "condutor": "Darly Gomes",
+        "telefone": "8185252242",
+        "placa": "EPV6G74",
+        "endereco_garagem": "AV.abdos cabus 1630 apart. 507 bloco 6",
+        "escolas": [
+          "Colégio da Polícia Militar"
+        ],
+        "local_fotos": [
+          "https://files.manuscdn.com/user_upload_by_module/session_file/310519663091561059/btCSFAGPswLmeahT.jpeg"
+        ],
+        "impacto": 480000,
+        "rota_km": 8,
+        "observacoes": "Rota com 1 escolas"
+      },
+      {
+        "condutor": "Alex",
+        "telefone": "8186287736",
+        "placa": "KGT8896",
+        "endereco_garagem": "Av abdus cabus 2063",
+        "escolas": [
+          "Colégio da Polícia Militar"
+        ],
+        "local_fotos": [
+          "https://files.manuscdn.com/user_upload_by_module/session_file/310519663091561059/zoqFcIWdsfzsVUAq.jpeg"
+        ],
+        "impacto": 480000,
+        "rota_km": 8,
+        "observacoes": "Rota com 1 escolas"
+      }
+    ]
+  },
+  "Valparaíso": {
+    "center": {
+      "lat": -16.0631,
+      "lng": -47.9828,
+      "zoom": 14
+    },
+    "vans": [
+      {
+        "condutor": "Allysson César Nunes da Silva Braga",
+        "telefone": "61992795689",
+        "placa": "ONI7J89",
+        "endereco_garagem": "QR 402 bloco P Apto 104",
+        "escolas": [
+          "Escola Municipal Céu Azul",
+          "Escola Municipal Judite Maria da Silva"
+        ],
+        "local_fotos": [
+          "https://files.manuscdn.com/user_upload_by_module/session_file/310519663091561059/CReZGmhtFvmZcgqE.jpeg"
+        ],
+        "impacto": 960000,
+        "rota_km": 16,
+        "observacoes": "Rota com 2 escolas"
+      },
+      {
+        "condutor": "Juranio César Lopes da Silva Junior",
+        "telefone": "61984960098",
+        "placa": "JRT8D10",
+        "endereco_garagem": "Rua 06",
+        "escolas": [
+          "Colégio Valparaíso"
+        ],
+        "local_fotos": [
+          "https://files.manuscdn.com/user_upload_by_module/session_file/310519663091561059/SuzSGbwgmhtoSnTd.jpeg"
+        ],
+        "impacto": 480000,
+        "rota_km": 8,
+        "observacoes": "Rota com 1 escolas"
+      },
+      {
+        "condutor": "Emerson de Sousa Nascimento",
+        "telefone": "61992019251",
+        "placa": "LLB7135",
+        "endereco_garagem": "QR 209 Conjunto i Casa 34 - Santa Maria, Brasília - DF, 72509-401",
+        "escolas": [
+          "Colégio Evangelico Plenitude",
+          "Colégio Estadual Novo Gama"
+        ],
+        "local_fotos": [
+          "https://files.manuscdn.com/user_upload_by_module/session_file/310519663091561059/YPbDkJeMPURtAiJL.jpeg"
+        ],
+        "impacto": 960000,
+        "rota_km": 16,
+        "observacoes": "Rota com 2 escolas"
+      },
+      {
+        "condutor": "Leônidas Patric Aleixo da Silva",
+        "telefone": "61995751982",
+        "placa": "JJB4A96",
+        "endereco_garagem": "Q. 13, Lote 21 - Valparaíso II",
+        "escolas": [
+          "Colégio Estadual Gildete Barreto de Lima",
+          "Escola Municipal Natielly Laynon Alves Nunes"
+        ],
+        "local_fotos": [
+          "https://files.manuscdn.com/user_upload_by_module/session_file/310519663091561059/KifHfvlcEdaQPslS.jpeg"
+        ],
+        "impacto": 960000,
+        "rota_km": 16,
+        "observacoes": "Rota com 2 escolas"
+      },
+      {
+        "condutor": "Rafael souza silva",
+        "telefone": "61991022304",
+        "placa": "JFQ3D27",
+        "endereco_garagem": "QR 218 Conjunto H, 11",
+        "escolas": [
+          "Colégio Decisivo"
+        ],
+        "local_fotos": [
+          "https://files.manuscdn.com/user_upload_by_module/session_file/310519663091561059/tIVdTAYQsyXwVVdb.jpeg"
+        ],
+        "impacto": 480000,
+        "rota_km": 8,
+        "observacoes": "Rota com 1 escolas"
+      }
+    ]
+  },
+  "Morrinhos": {
+    "center": {
+      "lat": -17.7314,
+      "lng": -49.1019,
+      "zoom": 14
+    },
+    "vans": [
+      {
+        "condutor": "Jean Carlos",
+        "telefone": "6492414560",
+        "placa": "NFK1889",
+        "endereco_garagem": "R Barao Do Rio Branco, S/N - Quadra 02;lote 05;sala 03 - Centro",
+        "escolas": [
+          "Escola Infantil Teresinha Corcelli",
+          "Escola Municipal Professor Humberto Jacinto Pereira",
+          "Escola Municipal Kleyton Sousa Peres",
+          "CPM Xavier de Almeida",
+          "E.M. Celestino Filho",
+          "Escola Senador Hermenegildo de Morais",
+          "Colégio Estadual Coronel Pedro Nunes",
+          "Escola Criativa, E.M. Professor José Cândido",
+          "E.M. Olga Hannun de Castro Rosa",
+          "Escola Infantil Teresinha Corcelli",
+          "Escola Municipal Professora Mary do Carmo",
+          "Escola Rotary",
+          "CMHR Prof.ª Alice Ferreira do Carmo",
+          "CEPI Alfredo Nasser",
+          "Escola Infantil Dona Lourdes Gentil De Mello",
+          "Centro Educacional Saber Supremo",
+          "Colégio Estadual Silvio Gomes De Melo Filho."
+        ],
+        "local_fotos": [
+          "https://files.manuscdn.com/user_upload_by_module/session_file/310519663091561059/NFBpBeriNAucPcLl.jpeg"
+        ],
+        "impacto": 8160000,
+        "rota_km": 136,
+        "observacoes": "Rota com 17 escolas"
+      },
+     {
+        "condutor": "Jean Carlos",
+        "telefone": "6492414560",
+        "placa": "NRZ1725",
+        "endereco_garagem": "R Barao Do Rio Branco, S/N - Quadra 02;lote 05;sala 03 - Centro",
+        "escolas": [
+            "Escola Municipal Kleyton Sousa Peres",
+            "Escola Criativa, E.M. Professor José Cândido",
+            "E.M. Celestino Filho",
+            "CMHR Prof.ª Alice Ferreira do Carmo",
+            "Colégio Estadual Coronel Pedro Nunes",
+            "Escola Municipal Professor Humberto Jacinto Pereira",
+            "Escola Rotary",
+            "E.M. Olga Hannun de Castro Rosa",
+            "Escola Infantil Teresinha Corcelli",
+            "Escola Infantil Dona Lourdes Gentil De Mello",
+            "CEPI Alfredo Nasser",
+            "Escola Senador Hermenegildo de Morais",
+            "Escola Infantil Teresinha Corcelli",
+            "Colégio Estadual Silvio Gomes De Melo Filho.",
+            "CPM Xavier de Almeida",
+            "Centro Educacional Saber Supremo",
+            "Escola Municipal Professora Mary do Carmo"
+        ],
+        "local_fotos": [
+          "https://raw.githubusercontent.com/dvpe/Checkin/refs/heads/main/UCB2/NRZ1725.jpeg"
+        ],
+        "impacto": 8160000,
+        "rota_km": 136,
+        "observacoes": "Rota com 17 escolas"
+      },
+     {
+        "condutor": "Jean Carlos",
+        "telefone": "6492414560",
+        "placa": "NFN9717",
+        "endereco_garagem": "R Barao Do Rio Branco, S/N - Quadra 02;lote 05;sala 03 - Centro",
+        "escolas": [
+            "Escola Infantil Teresinha Corcelli",
+            "Escola Criativa, E.M. Professor José Cândido",
+            "Escola Municipal Professora Mary do Carmo",
+            "CEPI Alfredo Nasser",
+            "Colégio Estadual Silvio Gomes De Melo Filho.",
+            "Escola Rotary",
+            "Centro Educacional Saber Supremo",
+            "Escola Municipal Professor Humberto Jacinto Pereira",
+            "CPM Xavier de Almeida",
+            "E.M. Olga Hannun de Castro Rosa",
+            "Escola Infantil Teresinha Corcelli",
+            "Colégio Estadual Coronel Pedro Nunes",
+            "Escola Senador Hermenegildo de Morais",
+            "Escola Municipal Kleyton Sousa Peres",
+            "Escola Infantil Dona Lourdes Gentil De Mello",
+            "CMHR Prof.ª Alice Ferreira do Carmo",
+            "E.M. Celestino Filho"
+        ],
+        "local_fotos": [
+          "https://raw.githubusercontent.com/dvpe/Checkin/refs/heads/main/UCB2/NFN9717.jpeg"
+        ],
+        "impacto": 8160000,
+        "rota_km": 136,
+        "observacoes": "Rota com 17 escolas"
+      },
+     {
+        "condutor": "Jean Carlos",
+        "telefone": "6492414560",
+        "placa": "KFX1472",
+        "endereco_garagem": "R Barao Do Rio Branco, S/N - Quadra 02;lote 05;sala 03 - Centro",
+        "escolas": [
+            "CEPI Alfredo Nasser",
+            "CPM Xavier de Almeida",
+            "Escola Municipal Professora Mary do Carmo",
+            "Escola Infantil Teresinha Corcelli",
+            "Escola Criativa, E.M. Professor José Cândido",
+            "Escola Municipal Professor Humberto Jacinto Pereira",
+            "E.M. Olga Hannun de Castro Rosa",
+            "Colégio Estadual Coronel Pedro Nunes",
+            "Escola Infantil Dona Lourdes Gentil De Mello",
+            "Escola Rotary",
+            "E.M. Celestino Filho",
+            "Escola Senador Hermenegildo de Morais",
+            "Colégio Estadual Silvio Gomes De Melo Filho.",
+            "Escola Municipal Kleyton Sousa Peres",
+            "Escola Infantil Teresinha Corcelli",
+            "Centro Educacional Saber Supremo",
+            "CMHR Prof.ª Alice Ferreira do Carmo"
+        ],
+        "local_fotos": [
+          "https://raw.githubusercontent.com/dvpe/Checkin/refs/heads/main/UCB2/KFX1472.jpeg"
+        ],
+        "impacto": 8160000,
+        "rota_km": 136,
+        "observacoes": "Rota com 17 escolas"
+      },              
+     {
+        "condutor": "Jean Carlos",
+        "telefone": "6492414560",
+        "placa": "NLH8492",
+        "endereco_garagem": "R Barao Do Rio Branco, S/N - Quadra 02;lote 05;sala 03 - Centro",
+        "escolas": [
+            "Escola Infantil Dona Lourdes Gentil De Mello",
+            "Escola Infantil Teresinha Corcelli",
+            "Colégio Estadual Silvio Gomes De Melo Filho.",
+            "Centro Educacional Saber Supremo",
+            "Escola Municipal Professora Mary do Carmo",
+            "Escola Rotary",
+            "Escola Municipal Professor Humberto Jacinto Pereira",
+            "E.M. Olga Hannun de Castro Rosa",
+            "CPM Xavier de Almeida",
+            "Escola Criativa, E.M. Professor José Cândido",
+            "Escola Infantil Teresinha Corcelli",
+            "Escola Municipal Kleyton Sousa Peres",
+            "Escola Senador Hermenegildo de Morais",
+            "Colégio Estadual Coronel Pedro Nunes",
+            "E.M. Celestino Filho",
+            "CMHR Prof.ª Alice Ferreira do Carmo",
+            "CEPI Alfredo Nasser"
+        ],
+        "local_fotos": [
+          "https://raw.githubusercontent.com/dvpe/Checkin/refs/heads/main/UCB2/NLH8492.jpeg"
+        ],
+        "impacto": 8160000,
+        "rota_km": 136,
+        "observacoes": "Rota com 17 escolas"
+      }              
+    ]
+  }
+};
+
+        // Calcular CPM automaticamente
+        function calcularCPM() {
+            let totalVans = 0;
+            Object.values(cidadesData).forEach(cidade => {
+                totalVans += cidade.vans.length;
+            });
+            
+            const impactoTotal = totalVans * IMPACTO_POR_VAN;
+            const cpm = (VALOR_TOTAL / impactoTotal) * 1000;
+            
+            return {
+                totalVans: totalVans,
+                impactoTotal: impactoTotal,
+                cpm: cpm
+            };
+        }
+
+        // Pré-carregar imagens
+        function preloadImages() {
+            const images = [];
+            
+            images.push('https://files.manuscdn.com/user_upload_by_module/session_file/310519663091561059/tvRMVJfsqveKwCjE.png');
+            
+            Object.values(cidadesData).forEach(cidade => {
+                cidade.vans.forEach(van => {
+                    if (Array.isArray(van.local_fotos)) {
+                        van.local_fotos.forEach(foto => images.push(foto));
+                    }
+                });
+            });
+
+            totalImages = images.length;
+            
+            images.forEach(src => {
+                const img = new Image();
+                img.onload = () => {
+                    imagesLoaded++;
+                    updateLoadingProgress();
+                };
+                img.onerror = () => {
+                    imagesLoaded++;
+                    updateLoadingProgress();
+                };
+                img.src = src;
+            });
+        }
+
+        function updateLoadingProgress() {
+            const progress = Math.round((imagesLoaded / totalImages) * 100);
+            document.getElementById('loading-progress').textContent = progress + '%';
+            
+            if (imagesLoaded >= totalImages) {
+                setTimeout(() => {
+                    document.getElementById('loading-screen').classList.add('hidden');
+                }, 500);
+            }
+        }
+
+        // Criar carrossel de fotos
+        function createCarousel(container, photos, autoplay = true) {
+            if (!photos || photos.length === 0) return;
+            
+            container.innerHTML = '';
+            
+            photos.forEach((photo, index) => {
+                const img = document.createElement('img');
+                img.src = photo;
+                img.className = 'carousel-photo' + (index === 0 ? ' active' : '');
+                img.alt = `Foto ${index + 1}`;
+                img.style.cursor = 'pointer';
+                img.style.cursor = 'pointer';
+                img.onclick = () => openImageModal(photo);
+                container.appendChild(img);
+            });
+            
+            if (photos.length > 1) {
+                const indicators = document.createElement('div');
+                indicators.className = 'carousel-indicators';
+                photos.forEach((_, index) => {
+                    const indicator = document.createElement('div');
+                    indicator.className = 'carousel-indicator' + (index === 0 ? ' active' : '');
+                    indicators.appendChild(indicator);
+                });
+                container.appendChild(indicators);
+                
+                if (autoplay) {
+                    let currentIndex = 0;
+                    const interval = setInterval(() => {
+                        const images = container.querySelectorAll('.carousel-photo');
+                        const dots = container.querySelectorAll('.carousel-indicator');
+                        
+                        images[currentIndex].classList.remove('active');
+                        dots[currentIndex].classList.remove('active');
+                        
+                        currentIndex = (currentIndex + 1) % photos.length;
+                        
+                        images[currentIndex].classList.add('active');
+                        dots[currentIndex].classList.add('active');
+                    }, 1000); // 1 segundo
+                    
+                    return interval;
+                }
+            }
+            
+            return null;
+        }
+
+        // Criar ícone SVG de van
+        function createVanIcon(color) {
+            return {
+                path: 'M17.402,0H5.643C2.526,0,0,3.467,0,6.584v34.804c0,3.116,2.526,5.644,5.643,5.644h11.759c3.116,0,5.644-2.527,5.644-5.644 V6.584C23.044,3.467,20.518,0,17.402,0z M22.057,14.188v11.665l-2.729,0.351v-4.806L22.057,14.188z M20.625,10.773 c-1.016,3.9-2.219,8.51-2.219,8.51H4.638l-2.222-8.51C2.417,10.773,11.3,7.755,20.625,10.773z M3.748,21.713v4.492l-2.73-0.349 V14.502L3.748,21.713z M1.018,37.938V27.579l2.73,0.343v8.196L1.018,37.938z M2.575,40.882l2.218-3.336h13.771l2.219,3.336H2.575z M19.328,35.805v-7.872l2.729-0.355v10.048L19.328,35.805z',
+                fillColor: color,
+                fillOpacity: 1,
+                strokeColor: '#ffffff',
+                strokeWeight: 2,
+                scale: 0.8,
+                anchor: new google.maps.Point(11, 23)
+            };
+        }
+
+        // Criar ícone de escola AMARELO
+        function createSchoolIcon() {
+            return {
+                path: 'M12 3L1 9l4 2.18v6L12 21l7-3.82v-6l2-1.09V17h2V9L12 3zm6.82 6L12 12.72 5.18 9 12 5.28 18.82 9zM17 15.99l-5 2.73-5-2.73v-3.72L12 15l5-2.73v3.72z',
+                fillColor: '#FFD700',
+                fillOpacity: 1,
+                strokeColor: '#FFA000',
+                strokeWeight: 2.5,
+                scale: 1.5,
+                anchor: new google.maps.Point(12, 12)
+            };
+        }
+
+        // Inicializar o mapa
+        function initMap() {
+            map = new google.maps.Map(document.getElementById('map'), {
+                center: { lat: -22.2956, lng: -48.5578 },
+                zoom: 13,
+                styles: [
+                    {
+                        featureType: 'poi',
+                        elementType: 'labels',
+                        stylers: [{ visibility: 'off' }]
+                    }
+                ],
+                mapTypeControl: true,
+                streetViewControl: true,
+                fullscreenControl: true
+            });
+
+            directionsService = new google.maps.DirectionsService();
+
+            const citySelect = document.getElementById('citySelect');
+            const vanSelect = document.getElementById('vanSelect');
+
+            // Preencher dropdown de cidades
+            Object.keys(cidadesData).forEach(cidade => {
+                const option = document.createElement('option');
+                option.value = cidade;
+                option.textContent = cidade;
+                citySelect.appendChild(option);
+            });
+
+            // Evento de mudança de cidade
+            citySelect.addEventListener('change', function() {
+                currentCity = this.value;
+                vanSelect.innerHTML = '<option value="">-- Selecione uma van --</option>';
+                vanSelect.disabled = false;
+                document.getElementById('vanInfo').classList.remove('active');
+                limparMapa();
+
+                if (currentCity) {
+                    const vans = cidadesData[currentCity].vans;
+                    vans.forEach((van, index) => {
+                        const option = document.createElement('option');
+                        option.value = index;
+                        option.textContent = `${van.placa} - ${van.condutor}`;
+                        vanSelect.appendChild(option);
+                    });
+
+                    // Centralizar mapa na cidade
+                    const center = cidadesData[currentCity].center;
+                    map.setCenter({ lat: center.lat, lng: center.lng });
+                    map.setZoom(center.zoom);
+                }
+            });
+
+            // Evento de mudança de van
+            vanSelect.addEventListener('change', function() {
+                const vanIndex = parseInt(this.value);
+                if (!isNaN(vanIndex)) {
+                    currentVan = cidadesData[currentCity].vans[vanIndex];
+                    mostrarInfoVan();
+                    simularRota();
+                } else {
+                    document.getElementById('vanInfo').classList.remove('active');
+                    limparMapa();
+                    if (vanCarouselInterval) {
+                        clearInterval(vanCarouselInterval);
+                        vanCarouselInterval = null;
+                    }
+                }
+            });
+
+            // Renderizar cards de cidades
+            renderizarCards();
+            atualizarMetricas();
+        }
+
+        // Mostrar informações da van selecionada
+        function mostrarInfoVan() {
+            if (!currentVan) return;
+
+            // Limpar intervalo anterior
+            if (vanCarouselInterval) {
+                clearInterval(vanCarouselInterval);
+                vanCarouselInterval = null;
+            }
+
+            document.getElementById('vanDriver').textContent = currentVan.condutor;
+            document.getElementById('vanPhone').textContent = currentVan.telefone;
+            document.getElementById('vanPlate').textContent = currentVan.placa;
+            document.getElementById('vanGarage').textContent = currentVan.endereco_garagem;
+            document.getElementById('vanImpact').textContent = currentVan.impacto.toLocaleString('pt-BR');
+            document.getElementById('vanRoute').textContent = currentVan.rota_km;
+            document.getElementById('vanObs').textContent = currentVan.observacoes;
+            
+            // Criar carrossel de fotos
+            const carouselContainer = document.getElementById('vanCarousel');
+            vanCarouselInterval = createCarousel(carouselContainer, currentVan.local_fotos, true);
+            
+            document.getElementById('vanInfo').classList.add('active');
+        }
+
+        // Simular rota da van selecionada
+        function simularRota() {
+            if (!currentVan || !currentCity) return;
+
+            limparMapa();
+            document.getElementById('status').innerHTML = '<i class="fas fa-spinner fa-spin"></i> Gerando rota...';
+
+            const routeColor = routeColors[0];
+            const waypoints = [];
+
+            const garagemAddress = currentVan.endereco_garagem + ', ' + currentCity;
+            const geocoder = new google.maps.Geocoder();
+
+            geocoder.geocode({ address: garagemAddress }, function(results, status) {
+                if (status === 'OK') {
+                    const garagemLocation = results[0].geometry.location;
+
+                    // Marcador da garagem
+                    const garagemMarker = new google.maps.Marker({
+                        position: garagemLocation,
+                        map: map,
+                        icon: createVanIcon(routeColor),
+                        title: 'Garagem - ' + currentVan.endereco_garagem,
+                        animation: google.maps.Animation.DROP
+                    });
+                    markers.push(garagemMarker);
+
+                    // Geocodificar e adicionar marcadores das escolas
+                    let escolasProcessadas = 0;
+                    currentVan.escolas.forEach((escola, index) => {
+                        const escolaAddress = escola + ', ' + currentCity  + ', ' + garagemAddress;
+                        
+                        setTimeout(() => {
+                            geocoder.geocode({ address: escolaAddress }, function(results, status) {
+                                if (status === 'OK') {
+                                    const escolaMarker = new google.maps.Marker({
+                                        position: results[0].geometry.location,
+                                        map: map,
+                                        icon: createSchoolIcon(),
+                                        title: escola,
+                                        label: {
+                                            text: (index + 1).toString(),
+                                            color: '#000000',
+                                            fontWeight: 'bold',
+                                            fontSize: '14px'
+                                        },
+                                        animation: google.maps.Animation.DROP
+                                    });
+                                    markers.push(escolaMarker);
+
+                                    waypoints.push({
+                                        location: results[0].geometry.location,
+                                        stopover: true
+                                    });
+
+                                    escolasProcessadas++;
+                                    if (escolasProcessadas === currentVan.escolas.length) {
+                                        desenharRota(garagemLocation, garagemLocation, waypoints, routeColor);
+                                    }
+                                }
+                            });
+                        }, index * 200);
+                    });
+                }
+            });
+        }
+
+        // Desenhar rota no mapa
+        function desenharRota(origin, destination, waypoints, color) {
+            if (waypoints.length === 0) return;
+
+            const renderer = new google.maps.DirectionsRenderer({
+                map: map,
+                suppressMarkers: true,
+                polylineOptions: {
+                    strokeColor: color,
+                    strokeWeight: 5,
+                    strokeOpacity: 0.8
+                }
+            });
+
+            directionsRenderer.push(renderer);
+
+            const request = {
+                origin: origin,
+                destination: destination,
+                waypoints: waypoints.slice(0, 23),
+                optimizeWaypoints: false,
+                travelMode: google.maps.TravelMode.DRIVING
+            };
+
+            directionsService.route(request, function(result, status) {
+                if (status === 'OK') {
+                    renderer.setDirections(result);
+                    document.getElementById('status').innerHTML = '<i class="fas fa-check-circle"></i> Rota gerada com sucesso!';
+                    mostrarLegenda();
+                } else {
+                    document.getElementById('status').innerHTML = '<i class="fas fa-exclamation-triangle"></i> Erro ao gerar rota: ' + status;
+                }
+            });
+        }
+
+        // Simular todas as rotas
+        function simularTodasRotas() {
+            if (!currentCity) {
+                alert('Por favor, selecione uma cidade primeiro!');
+                return;
+            }
+
+            if (simulationInProgress) {
+                alert('Aguarde a simulação atual terminar!');
+                return;
+            }
+
+            simulationInProgress = true;
+            limparMapa();
+            document.getElementById('status').innerHTML = '<i class="fas fa-spinner fa-spin"></i> Gerando todas as rotas...';
+
+            const vans = cidadesData[currentCity].vans;
+            let vansProcessadas = 0;
+
+            vans.forEach((van, vanIndex) => {
+                const routeColor = routeColors[vanIndex % routeColors.length];
+                const waypoints = [];
+
+                setTimeout(() => {
+                    const garagemAddress = van.endereco_garagem + ', ' + currentCity;
+                    const geocoder = new google.maps.Geocoder();
+
+                    geocoder.geocode({ address: garagemAddress }, function(results, status) {
+                        if (status === 'OK') {
+                            const garagemLocation = results[0].geometry.location;
+
+                            const marker = new google.maps.Marker({
+                                position: garagemLocation,
+                                map: map,
+                                icon: createVanIcon(routeColor),
+                                title: `${currentCity} - ${van.placa}`,
+                                animation: google.maps.Animation.DROP
+                            });
+                            markers.push(marker);
+
+                            let escolasProcessadas = 0;
+                            van.escolas.forEach((escola, escolaIndex) => {
+                                const escolaAddress = escola + ', ' + currentCity;
+                                
+                                setTimeout(() => {
+                                    geocoder.geocode({ address: escolaAddress }, function(results, status) {
+                                        if (status === 'OK') {
+                                            const escolaMarker = new google.maps.Marker({
+                                                position: results[0].geometry.location,
+                                                map: map,
+                                                icon: createSchoolIcon(),
+                                                title: escola,
+                                                label: {
+                                                    text: (escolaIndex + 1).toString(),
+                                                    color: '#000000',
+                                                    fontWeight: 'bold',
+                                                    fontSize: '14px'
+                                                },
+                                                animation: google.maps.Animation.DROP
+                                            });
+                                            markers.push(escolaMarker);
+
+                                            waypoints.push({
+                                                location: results[0].geometry.location,
+                                                stopover: true
+                                            });
+
+                                            escolasProcessadas++;
+                                            if (escolasProcessadas === van.escolas.length) {
+                                                desenharRota(garagemLocation, garagemLocation, waypoints, routeColor);
+                                                vansProcessadas++;
+                                                
+                                                if (vansProcessadas === vans.length) {
+                                                    simulationInProgress = false;
+                                                    document.getElementById('status').innerHTML = '<i class="fas fa-check-circle"></i> Todas as rotas geradas com sucesso!';
+                                                }
+                                            }
+                                        }
+                                    });
+                                }, escolaIndex * 100);
+                            });
+                        }
+                    });
+                }, vanIndex * 1000);
+            });
+
+            mostrarLegenda();
+        }
+
+        // Mostrar legenda das rotas
+        function mostrarLegenda() {
+            const legend = document.getElementById('route-legend');
+            legend.style.display = 'block';
+            legend.innerHTML = '<h3><i class="fas fa-palette"></i> Legenda das Rotas</h3>';
+
+            if (currentVan) {
+                const item = document.createElement('div');
+                item.className = 'legend-item';
+                item.innerHTML = `
+                    <div class="legend-color" style="background-color: ${routeColors[0]}"></div>
+                    <span><strong>${currentVan.placa}</strong> - ${currentVan.condutor}</span>
+                `;
+                legend.appendChild(item);
+            } else if (currentCity) {
+                const vans = cidadesData[currentCity].vans;
+                vans.forEach((van, index) => {
+                    const item = document.createElement('div');
+                    item.className = 'legend-item';
+                    item.innerHTML = `
+                        <div class="legend-color" style="background-color: ${routeColors[index % routeColors.length]}"></div>
+                        <span><strong>${van.placa}</strong> - ${van.condutor}</span>
+                    `;
+                    legend.appendChild(item);
+                });
+            }
+        }
+
+        // Limpar mapa
+        function limparMapa() {
+            markers.forEach(marker => marker.setMap(null));
+            markers = [];
+
+            directionsRenderer.forEach(renderer => renderer.setMap(null));
+            directionsRenderer = [];
+
+            document.getElementById('route-legend').style.display = 'none';
+            document.getElementById('status').innerHTML = '<i class="fas fa-info-circle"></i> Selecione uma cidade e van para visualizar as rotas';
+        }
+
+        // Renderizar cards de cidades
+        function renderizarCards() {
+            const container = document.getElementById('cards-container');
+            container.innerHTML = '';
+
+            Object.entries(cidadesData).forEach(([cidade, data]) => {
+                const cityCard = document.createElement('div');
+                cityCard.className = 'city-card';
+
+                const vansGallery = data.vans.map((van, vanIndex) => {
+                    const carouselId = `carousel-${cidade}-${vanIndex}`;
+                    
+                    const photosHtml = van.local_fotos.map((foto, fotoIndex) => 
+                        `<img src="${foto}" alt="Van ${van.placa} - Foto ${fotoIndex + 1}" class="${fotoIndex === 0 ? 'active' : ''}" onclick="openImageModal('${foto}')" style="cursor: pointer;">`
+                    ).join('');
+                    
+                    const indicatorsHtml = van.local_fotos.length > 1 ? `
+                        <div class="carousel-indicators">
+                            ${van.local_fotos.map((_, i) => 
+                                `<div class="carousel-indicator ${i === 0 ? 'active' : ''}"></div>`
+                            ).join('')}
+                        </div>
+                    ` : '';
+                    
+                    return `
+                        <div class="van-gallery-item">
+                            <div class="van-gallery-carousel" id="${carouselId}">
+                                ${photosHtml}
+                                ${indicatorsHtml}
+                            </div>
+                            <div class="van-gallery-info">
+                                <p><strong><i class="fas fa-id-card"></i> Placa:</strong> ${van.placa}</p>
+                                <p><strong><i class="fas fa-user"></i> Condutor:</strong> ${van.condutor}</p>
+                                <p><strong><i class="fas fa-phone"></i> Telefone:</strong> ${van.telefone}</p>
+                                <p><strong><i class="fas fa-home"></i> Garagem:</strong> ${van.endereco_garagem}</p>
+                                <p><strong><i class="fas fa-eye"></i> Impacto:</strong> ${van.impacto.toLocaleString('pt-BR')} impressões/mês</p>
+                                <p><strong><i class="fas fa-route"></i> Rota:</strong> ${van.rota_km} km</p>
+                                <details class="escolas-dropdown">
+                                    <summary><i class="fas fa-school"></i> Escolas Atendidas (${van.escolas.length})</summary>
+                                    <div class="escolas-list">
+                                        <ul>
+                                            ${van.escolas.map(escola => `<li>${escola}</li>`).join('')}
+                                        </ul>
+                                    </div>
+                                </details>
+                            </div>
+                        </div>
+                    `;
+                }).join('');
+
+                cityCard.innerHTML = `
+                    <div class="city-header">
+                        <div class="city-name">${cidade}</div>
+                        <div class="vehicle-count">
+                            <i class="fas fa-bus"></i> ${data.vans.length} ${data.vans.length === 1 ? 'Van' : 'Vans'}
+                        </div>
+                    </div>
+                    <div class="vans-gallery">
+                        ${vansGallery}
+                    </div>
+                `;
+
+                container.appendChild(cityCard);
+
+                // Iniciar carrosséis para cada van
+                data.vans.forEach((van, vanIndex) => {
+                    if (van.local_fotos.length > 1) {
+                        const carouselId = `carousel-${cidade}-${vanIndex}`;
+                        const carouselElement = document.getElementById(carouselId);
+                        
+                        let currentIndex = 0;
+                        const interval = setInterval(() => {
+                            const images = carouselElement.querySelectorAll('img');
+                            const dots = carouselElement.querySelectorAll('.carousel-indicator');
+                            
+                            if (images.length === 0) {
+                                clearInterval(interval);
+                                return;
+                            }
+                            
+                            images[currentIndex].classList.remove('active');
+                            if (dots.length > 0) dots[currentIndex].classList.remove('active');
+                            
+                            currentIndex = (currentIndex + 1) % van.local_fotos.length;
+                            
+                            images[currentIndex].classList.add('active');
+                            if (dots.length > 0) dots[currentIndex].classList.add('active');
+                        }, 1000); // 1 segundo
+                        
+                        carouselIntervals[carouselId] = interval;
+                    }
+                });
+            });
+        }
+
+        // Atualizar métricas
+        function atualizarMetricas() {
+            const metricas = calcularCPM();
+            
+            let totalEscolas = 0;
+            Object.values(cidadesData).forEach(cidade => {
+                cidade.vans.forEach(van => {
+                    totalEscolas += van.escolas.length;
+                });
+            });
+
+            document.getElementById('total-vans').textContent = metricas.totalVans;
+            document.getElementById('total-escolas').textContent = totalEscolas;
+            document.getElementById('total-impacto').textContent = metricas.impactoTotal.toLocaleString('pt-BR');
+            
+        }
+
+        // Modal de imagem
+        function openImageModal(src) {
+            if (!src) return;
+            document.getElementById('imageModal').classList.add('active');
+            document.getElementById('modalImage').src = src;
+        }
+
+        function closeImageModal() {
+            document.getElementById('imageModal').classList.remove('active');
+        }
+
+        // Fechar modal ao clicar fora da imagem
+        document.getElementById('imageModal').addEventListener('click', function(e) {
+            if (e.target === this) {
+                closeImageModal();
+            }
+        });
+
+        // Inicializar
+        window.addEventListener('DOMContentLoaded', () => {
+            preloadImages();
+        });
+
+        // Limpar intervalos ao sair da página
+        window.addEventListener('beforeunload', () => {
+            Object.values(carouselIntervals).forEach(interval => clearInterval(interval));
+            if (vanCarouselInterval) clearInterval(vanCarouselInterval);
+        });
+    </script>
+
+    <script async defer src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBDKTnVRwJ0CwotEFufK4maf9L0i-27M04&callback=initMap"></script>
+</body>
+</html>
