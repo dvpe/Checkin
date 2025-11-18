@@ -1,0 +1,1332 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sistema Check-in Ultragaz - Campanha Escolas São João do Piauí 2025</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        /* Reset e Configurações Básicas */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: linear-gradient(135deg, #0d47a1 0%, #283593 25%, #1976d2 50%, #ff6f00 75%, #7986cb 100%);
+            color: white;
+            min-height: 100vh;
+            padding: 20px;
+            position: relative;
+            overflow-x: hidden;
+        }
+
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: 
+                radial-gradient(circle at 20% 50%, rgba(255, 255, 255, 0.05) 0%, transparent 50%),
+                radial-gradient(circle at 80% 80%, rgba(255, 255, 255, 0.05) 0%, transparent 50%),
+                url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><defs><pattern id="grid" width="10" height="10" patternUnits="userSpaceOnUse"><path d="M 10 0 L 0 0 0 10" fill="none" stroke="rgba(255,255,255,0.03)" stroke-width="0.5"/></pattern></defs><rect width="100" height="100" fill="url(%23grid)"/></svg>');
+            z-index: -1;
+            animation: backgroundPulse 10s ease-in-out infinite;
+        }
+
+        @keyframes backgroundPulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.8; }
+        }
+
+        /* Loading Screen */
+        #loading-screen {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, #0d47a1 0%, #1976d2 100%);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            z-index: 9999;
+            transition: opacity 0.5s ease, visibility 0.5s ease;
+        }
+
+        #loading-screen.hidden {
+            opacity: 0;
+            visibility: hidden;
+        }
+
+        .loader {
+            width: 100px;
+            height: 100px;
+            border: 10px solid rgba(255, 255, 255, 0.1);
+            border-top: 10px solid #ffeb3b;
+            border-radius: 50%;
+            animation: spin 1.2s cubic-bezier(0.5, 0, 0.5, 1) infinite;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .loading-text {
+            margin-top: 40px;
+            font-size: 1.8rem;
+            font-weight: 700;
+            animation: pulse 1.5s ease-in-out infinite;
+            text-shadow: 0 0 20px rgba(255, 235, 59, 0.5);
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; transform: scale(1); }
+            50% { opacity: 0.7; transform: scale(1.05); }
+        }
+
+        .loading-progress {
+            margin-top: 25px;
+            font-size: 1.4rem;
+            font-weight: 600;
+            color: #ffeb3b;
+        }
+
+        /* Animações de entrada */
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(40px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        @keyframes scaleIn {
+            from {
+                opacity: 0;
+                transform: scale(0.85);
+            }
+            to {
+                opacity: 1;
+                transform: scale(1);
+            }
+        }
+
+        @keyframes slideInLeft {
+            from {
+                opacity: 0;
+                transform: translateX(-50px);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+
+        .animate-on-load {
+            opacity: 0;
+            animation: fadeInUp 1s ease forwards;
+        }
+
+        .container {
+            max-width: 1600px;
+            margin: 0 auto;
+            position: relative;
+            z-index: 1;
+        }
+
+        /* Estilo do Cabeçalho */
+        .header {
+            text-align: center;
+            margin-bottom: 50px;
+            background: rgba(255, 255, 255, 0.12);
+            backdrop-filter: blur(30px);
+            border-radius: 30px;
+            padding: 50px;
+            border: 3px solid rgba(255, 255, 255, 0.25);
+            box-shadow: 
+                0 25px 50px rgba(0, 0, 0, 0.3),
+                inset 0 1px 0 rgba(255, 255, 255, 0.2);
+            animation-delay: 0.1s;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .header::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(255, 255, 255, 0.1) 0%, transparent 70%);
+            animation: headerGlow 8s linear infinite;
+        }
+
+        @keyframes headerGlow {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .logo {
+            width: 250px;
+            height: auto;
+            margin-bottom: 30px;
+            background: white;
+            padding: 25px;
+            border-radius: 20px;
+            box-shadow: 
+                0 15px 40px rgba(0, 0, 0, 0.3),
+                0 0 40px rgba(255, 235, 59, 0.3);
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            position: relative;
+            z-index: 1;
+        }
+
+        .logo:hover {
+            transform: scale(1.1) rotate(3deg);
+            box-shadow: 
+                0 20px 60px rgba(0, 0, 0, 0.4),
+                0 0 60px rgba(255, 235, 59, 0.5);
+        }
+
+        .header h1 {
+            font-size: 3.5rem;
+            margin-bottom: 20px;
+            text-shadow: 
+                3px 3px 8px rgba(0, 0, 0, 0.5),
+                0 0 30px rgba(255, 235, 59, 0.3);
+            font-weight: 900;
+            position: relative;
+            z-index: 1;
+        }
+
+        .header p {
+            font-size: 1.5rem;
+            opacity: 0.95;
+            margin-bottom: 10px;
+            font-weight: 500;
+            position: relative;
+            z-index: 1;
+        }
+
+        .valor-destaque {
+            font-size: 3rem;
+            font-weight: 900;
+            margin-top: 20px;
+            text-shadow: 
+                3px 3px 6px rgba(0, 0, 0, 0.4),
+                0 0 20px rgba(255, 235, 59, 0.5);
+            animation: pulseGlow 2.5s ease-in-out infinite;
+            color: #ffeb3b;
+            position: relative;
+            z-index: 1;
+        }
+
+        @keyframes pulseGlow {
+            0%, 100% { 
+                transform: scale(1);
+                text-shadow: 
+                    3px 3px 6px rgba(0, 0, 0, 0.4),
+                    0 0 20px rgba(255, 235, 59, 0.5);
+            }
+            50% { 
+                transform: scale(1.05);
+                text-shadow: 
+                    3px 3px 6px rgba(0, 0, 0, 0.4),
+                    0 0 40px rgba(255, 235, 59, 0.8);
+            }
+        }
+
+        /* Métricas */
+        .metrics-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 30px;
+            margin-bottom: 50px;
+        }
+
+        .metric-card {
+            background: linear-gradient(145deg, rgba(255, 255, 255, 0.15), rgba(255, 255, 255, 0.05));
+            backdrop-filter: blur(20px);
+            color: white;
+            padding: 40px;
+            border-radius: 25px;
+            text-align: center;
+            box-shadow: 
+                0 20px 50px rgba(0, 0, 0, 0.2),
+                inset 0 1px 0 rgba(255, 255, 255, 0.3);
+            border: 2px solid rgba(255, 255, 255, 0.2);
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            animation-delay: 0.2s;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .metric-card::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(255, 235, 59, 0.1) 0%, transparent 70%);
+            opacity: 0;
+            transition: opacity 0.4s ease;
+        }
+
+        .metric-card:hover::before {
+            opacity: 1;
+            animation: cardGlow 2s linear infinite;
+        }
+
+        @keyframes cardGlow {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .metric-card:hover {
+            transform: translateY(-15px) scale(1.05);
+            box-shadow: 
+                0 30px 70px rgba(0, 0, 0, 0.3),
+                0 0 40px rgba(255, 235, 59, 0.4),
+                inset 0 1px 0 rgba(255, 255, 255, 0.4);
+            border-color: rgba(255, 235, 59, 0.5);
+        }
+
+        .metric-icon {
+            font-size: 3rem;
+            margin-bottom: 20px;
+            opacity: 0.9;
+            color: #ffeb3b;
+            text-shadow: 0 0 20px rgba(255, 235, 59, 0.5);
+        }
+
+        .metric-number {
+            font-size: 3.5rem;
+            font-weight: 900;
+            margin-bottom: 15px;
+            color: white;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+        }
+
+        .metric-label {
+            font-size: 1.1rem;
+            opacity: 0.9;
+            color: #e3f2fd;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        /* Seção de Check-in */
+        .checkin-section {
+            background: rgba(255, 255, 255, 0.12);
+            backdrop-filter: blur(30px);
+            border-radius: 30px;
+            padding: 50px;
+            margin-bottom: 50px;
+            border: 3px solid rgba(255, 255, 255, 0.25);
+            box-shadow: 
+                0 25px 50px rgba(0, 0, 0, 0.3),
+                inset 0 1px 0 rgba(255, 255, 255, 0.2);
+            animation-delay: 0.3s;
+        }
+
+        .simulation-title {
+            font-size: 2.5rem;
+            margin-bottom: 30px;
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            font-weight: 800;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+        }
+
+        .simulation-title i {
+            color: #ffeb3b;
+            text-shadow: 0 0 20px rgba(255, 235, 59, 0.5);
+        }
+
+        .checkin-form {
+            display: flex;
+            gap: 25px;
+            margin-bottom: 30px;
+            flex-wrap: wrap;
+            align-items: flex-end;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            min-width: 300px;
+            flex-grow: 1;
+        }
+
+        .form-group label {
+            font-weight: 700;
+            margin-bottom: 10px;
+            font-size: 1.2rem;
+            text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.3);
+        }
+
+        .form-group label i {
+            color: #ffeb3b;
+            margin-right: 8px;
+        }
+
+        .form-group select {
+            padding: 18px 25px;
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            border-radius: 15px;
+            background: rgba(255, 255, 255, 0.95);
+            color: #0d47a1;
+            font-size: 1.2rem;
+            cursor: pointer;
+            font-weight: 600;
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+            transition: all 0.3s ease;
+        }
+
+        .form-group select:hover {
+            box-shadow: 0 12px 30px rgba(0, 0, 0, 0.25);
+            transform: translateY(-3px);
+            border-color: #ffeb3b;
+        }
+
+        .form-group select:focus {
+            outline: none;
+            border-color: #ffeb3b;
+            box-shadow: 0 0 0 4px rgba(255, 235, 59, 0.2);
+        }
+
+        .controls {
+            display: flex;
+            gap: 25px;
+            margin-top: 30px;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+
+        .controls button {
+            padding: 18px 35px;
+            border: none;
+            border-radius: 15px;
+            cursor: pointer;
+            font-size: 1.2rem;
+            font-weight: 700;
+            transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .controls button:active {
+            transform: scale(0.95);
+        }
+
+        .btn-simulate {
+            background: linear-gradient(135deg, #ffeb3b, #fbc02d);
+            color: #0d47a1;
+        }
+
+        .btn-simulate:hover {
+            transform: translateY(-5px);
+            box-shadow: 
+                0 15px 35px rgba(251, 192, 45, 0.4),
+                0 0 30px rgba(255, 235, 59, 0.3);
+        }
+
+        .btn-clear {
+            background: linear-gradient(135deg, rgba(255, 255, 255, 0.3), rgba(255, 255, 255, 0.1));
+            color: white;
+            border: 2px solid rgba(255, 255, 255, 0.5);
+        }
+
+        .btn-clear:hover {
+            background: linear-gradient(135deg, rgba(255, 255, 255, 0.4), rgba(255, 255, 255, 0.2));
+            transform: translateY(-5px);
+            box-shadow: 0 15px 35px rgba(255, 255, 255, 0.2);
+        }
+
+        /* Van Info */
+        .van-info {
+            display: none;
+            padding: 30px;
+            margin-top: 25px;
+            background: rgba(255, 255, 255, 0.15);
+            border-radius: 20px;
+            animation: fadeIn 0.6s ease;
+            border: 2px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .van-photo {
+            width: 250px;
+            height: 180px;
+            object-fit: cover;
+            border-radius: 15px;
+            background: white;
+            padding: 10px;
+            transition: transform 0.4s ease;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+        }
+
+        .van-photo:hover {
+            transform: scale(1.15) rotate(2deg);
+        }
+
+        /* Mapa */
+        .simulation-section {
+            background: rgba(255, 255, 255, 0.12);
+            backdrop-filter: blur(30px);
+            border-radius: 30px;
+            padding: 50px;
+            margin-bottom: 50px;
+            border: 3px solid rgba(255, 255, 255, 0.25);
+            box-shadow: 
+                0 25px 50px rgba(0, 0, 0, 0.3),
+                inset 0 1px 0 rgba(255, 255, 255, 0.2);
+            animation-delay: 0.4s;
+        }
+
+        #map {
+            width: 100%;
+            height: 700px;
+            border-radius: 25px;
+            box-shadow: 
+                0 20px 50px rgba(0, 0, 0, 0.3),
+                0 0 40px rgba(255, 235, 59, 0.2);
+            margin-bottom: 30px;
+            border: 4px solid rgba(255, 255, 255, 0.3);
+        }
+
+        .status-container {
+            background: rgba(255, 255, 255, 0.15);
+            border-radius: 20px;
+            padding: 25px;
+            margin-top: 30px;
+            backdrop-filter: blur(15px);
+            border: 2px solid rgba(255, 255, 255, 0.2);
+        }
+
+        #status {
+            text-align: center;
+            padding: 30px;
+            opacity: 0.95;
+            font-size: 1.3rem;
+            font-weight: 600;
+        }
+
+        /* Legenda de Cores */
+        .route-legend {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 20px;
+            justify-content: center;
+            margin-top: 25px;
+            padding: 20px;
+            background: rgba(255, 255, 255, 0.15);
+            border-radius: 15px;
+            border: 2px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 1rem;
+            padding: 8px 16px;
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 10px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+
+        .legend-item:hover {
+            transform: scale(1.1);
+            background: rgba(255, 255, 255, 0.3);
+        }
+
+        .legend-color {
+            width: 40px;
+            height: 5px;
+            border-radius: 3px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+        }
+
+        /* Cards */
+        .cards-section {
+            margin-top: 50px;
+            animation-delay: 0.5s;
+        }
+
+        .section-title {
+            font-size: 2.8rem;
+            margin-bottom: 40px;
+            font-weight: 900;
+            text-align: center;
+            text-shadow: 
+                3px 3px 6px rgba(0, 0, 0, 0.4),
+                0 0 30px rgba(255, 235, 59, 0.3);
+        }
+
+        .section-title i {
+            color: #ffeb3b;
+            margin-right: 15px;
+        }
+
+        #cards-container {
+            display: flex;
+            flex-direction: column;
+            gap: 40px;
+        }
+
+        .city-card {
+            background: linear-gradient(145deg, rgba(255, 255, 255, 0.98), rgba(255, 255, 255, 0.95));
+            color: #0d47a1;
+            padding: 40px;
+            border-radius: 30px;
+            box-shadow: 
+                0 20px 50px rgba(0, 0, 0, 0.25),
+                inset 0 1px 0 rgba(255, 255, 255, 0.5);
+            border: 3px solid #ff6f00;
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            animation: scaleIn 0.8s ease;
+        }
+
+        .city-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 
+                0 30px 70px rgba(0, 0, 0, 0.35),
+                0 0 50px rgba(255, 235, 59, 0.3);
+            border-color: #ffeb3b;
+        }
+
+        .city-header {
+            border-bottom: 4px solid #e3f2fd;
+            padding-bottom: 20px;
+            margin-bottom: 30px;
+        }
+
+        .city-name {
+            font-size: 3rem;
+            font-weight: 900;
+            color: #0d47a1;
+            line-height: 1.2;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        .vehicle-count {
+            font-size: 1.4rem;
+            font-weight: 700;
+            color: #1976d2;
+            margin-top: 10px;
+        }
+
+        /* Galeria de Vans */
+        .vans-gallery {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 30px;
+        }
+
+        .van-gallery-item {
+            background: #ffffff;
+            border: 2px solid #e3f2fd;
+            border-radius: 20px;
+            overflow: hidden;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            display: flex;
+            flex-direction: column;
+        }
+
+        .van-gallery-item:hover {
+            box-shadow: 
+                0 20px 50px rgba(0, 0, 0, 0.2),
+                0 0 30px rgba(255, 235, 59, 0.2);
+            transform: translateY(-10px);
+            border-color: #ffeb3b;
+        }
+
+        .van-gallery-photo {
+            width: 100%;
+            height: 250px;
+            object-fit: cover;
+            display: block;
+            transition: transform 0.6s ease;
+            background: #f5f5f5;
+        }
+
+        .van-gallery-item:hover .van-gallery-photo {
+            transform: scale(1.1);
+        }
+
+        .van-gallery-info {
+            padding: 25px;
+            font-size: 1.05rem;
+            line-height: 1.8;
+            color: #0d47a1;
+        }
+
+        .van-gallery-info strong {
+            color: #1976d2;
+        }
+
+        .van-gallery-info i {
+            color: #ff6f00;
+            margin-right: 8px;
+        }
+
+        /* Dropdown de Escolas */
+        .escolas-dropdown {
+            margin-top: 15px;
+            border-top: 2px solid #e3f2fd;
+            padding: 15px 0 0 0;
+            color: #1976d2;
+        }
+
+        .escolas-dropdown summary {
+            font-weight: 700;
+            cursor: pointer;
+            list-style: none;
+            padding: 10px 0;
+            transition: all 0.3s ease;
+            font-size: 1.1rem;
+        }
+
+        .escolas-dropdown summary:hover {
+            color: #0d47a1;
+            transform: translateX(5px);
+        }
+
+        .escolas-dropdown summary::after {
+            content: ' ▼';
+            font-size: 0.9em;
+            transition: transform 0.3s ease;
+            display: inline-block;
+        }
+
+        .escolas-dropdown[open] summary::after {
+            transform: rotate(180deg);
+        }
+
+        .escolas-list ul {
+            margin-top: 15px;
+            padding-left: 30px;
+        }
+
+        .escolas-list li {
+            margin: 8px 0;
+            color: #0d47a1;
+            font-weight: 500;
+        }
+
+        /* Responsividade */
+        @media (max-width: 768px) {
+            .header h1 {
+                font-size: 2.2rem;
+            }
+
+            .valor-destaque {
+                font-size: 2rem;
+            }
+
+            .city-name {
+                font-size: 2rem;
+            }
+
+            .vans-gallery {
+                grid-template-columns: 1fr;
+            }
+
+            #map {
+                height: 500px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <!-- Loading Screen -->
+    <div id="loading-screen">
+        <div class="loader"></div>
+        <div class="loading-text">🚀 Carregando Sistema Ultragaz...</div>
+        <div class="loading-progress" id="loading-progress">0%</div>
+    </div>
+
+    <div class="container">
+        <!-- Cabeçalho -->
+        <div class="header animate-on-load">
+            <img src="https://raw.githubusercontent.com/dvpe/Checkin/main/Ultragaz/ULTRAGAZ.png" alt="Logo Ultragaz" class="logo">
+            <h1><i class="fas fa-fire"></i> Campanha Ultragaz - São João do Piauí</h1>
+            <p><i class="fas fa-map-marker-alt"></i> Escolas de São João do Piauí - PI</p>
+            <p><i class="fas fa-calendar-alt"></i> Campanha 2025</p>
+            <p class="valor-destaque"><i class="fas fa-fire"></i> Projeto Educacional Ultragaz</p>
+        </div>
+
+        <!-- Métricas -->
+        <div class="metrics-container">
+            <div class="metric-card animate-on-load">
+                <div class="metric-icon"><i class="fas fa-van-shuttle"></i></div>
+                <div class="metric-number">2</div>
+                <div class="metric-label">Total de Veículos</div>
+            </div>
+            <div class="metric-card animate-on-load">
+                <div class="metric-icon"><i class="fas fa-school"></i></div>
+                <div class="metric-number">3</div>
+                <div class="metric-label">Escolas Atendidas</div>
+            </div>
+            <div class="metric-card animate-on-load">
+                <div class="metric-icon"><i class="fas fa-city"></i></div>
+                <div class="metric-number">1</div>
+                <div class="metric-label">Cidade Coberta</div>
+            </div>
+            <div class="metric-card animate-on-load">
+                <div class="metric-icon"><i class="fas fa-users"></i></div>
+                <div class="metric-number">100%</div>
+                <div class="metric-label">Cobertura</div>
+            </div>
+        </div>
+
+        <!-- Seção de Check-in -->
+        <div class="checkin-section animate-on-load">
+            <h2 class="simulation-title"><i class="fas fa-clipboard-check"></i> Sistema de Check-in das Vans</h2>
+            <div class="checkin-form">
+                <div class="form-group">
+                    <label for="citySelect"><i class="fas fa-city"></i> Selecione a Cidade:</label>
+                    <select id="citySelect">
+                        <option value="">-- Escolha uma cidade --</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="vanSelect"><i class="fas fa-van-shuttle"></i> Selecione a Van:</label>
+                    <select id="vanSelect" disabled>
+                        <option value="">-- Primeiro selecione uma cidade --</option>
+                    </select>
+                </div>
+            </div>
+
+            <div id="vanInfo" class="van-info">
+                <h3 style="font-size: 1.8rem; margin-bottom: 20px;"><i class="fas fa-info-circle"></i> Informações da Van Selecionada</h3>
+                <div style="display: flex; gap: 30px; align-items: center; flex-wrap: wrap;">
+                    <img id="vanPhoto" class="van-photo" src="" alt="Foto da Van">
+                    <div style="line-height: 2;">
+                        <p><strong><i class="fas fa-user"></i> Condutor:</strong> <span id="vanDriver"></span></p>
+                        <p><strong><i class="fas fa-phone"></i> Telefone:</strong> <span id="vanPhone"></span></p>
+                        <p><strong><i class="fas fa-id-card"></i> Placa:</strong> <span id="vanPlate"></span></p>
+                        <p><strong><i class="fas fa-home"></i> Endereço da Garagem:</strong> <span id="vanGarage"></span></p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="controls">
+                <button class="btn-simulate" onclick="simularTodasRotas()">
+                    <i class="fas fa-route"></i> Simular Todas as Rotas
+                </button>
+                <button class="btn-clear" onclick="limparMapa()">
+                    <i class="fas fa-broom"></i> Limpar Mapa
+                </button>
+            </div>
+        </div>
+
+        <!-- Seção do Mapa -->
+        <div class="simulation-section animate-on-load">
+            <h2 class="simulation-title"><i class="fas fa-map"></i> Mapa Interativo das Rotas</h2>
+            <div id="map"></div>
+            <div id="route-legend" class="route-legend" style="display: none;"></div>
+            <div class="status-container">
+                <div id="status">
+                    <i class="fas fa-info-circle"></i> Selecione uma cidade e van para visualizar as rotas
+                </div>
+            </div>
+        </div>
+
+        <!-- Seção de Cards -->
+        <div class="cards-section animate-on-load">
+            <h2 class="section-title"><i class="fas fa-chart-bar"></i> Detalhamento por Cidade</h2>
+            <div id="cards-container"></div>
+        </div>
+    </div>
+
+    <script>
+        let map;
+        let directionsService;
+        let directionsRenderer = [];
+        let markers = [];
+        let currentCity = '';
+        let currentVan = null;
+        let simulationInProgress = false;
+        let imagesLoaded = 0;
+        let totalImages = 0;
+
+        const GOOGLE_MAPS_API_KEY = 'AIzaSyBDKTnVRwJ0CwotEFufK4maf9L0i-27M04';
+
+        // Cores vibrantes e diferentes para cada rota
+        const routeColors = [
+            '#FF1744', // Vermelho vibrante
+            '#00E676', // Verde vibrante
+            '#2979FF', // Azul vibrante
+            '#FF9100', // Laranja vibrante
+            '#E040FB'  // Roxo vibrante
+        ];
+
+        // Dados da campanha São João do Piauí
+        const cidadesData = {
+            "São João do Piauí": {
+                "center": { "lat": -8.3589, "lng": -42.2428, "zoom": 14 },
+                "vans": [
+                    {
+                        "condutor": "Osmar",
+                        "telefone": "8994336472",
+                        "placa": "CBS9342",
+                        "destino": "CEEP Deputado Francisco Antônio Paes Landim Neto; Centro Educacional Liberalina Paes Landim; Centro Educacional Elisa Maria Modesto Amorim",
+                        "endereco_garagem": "R. Jose Esteves Amorim, 1020",
+                        "local_fotos": "https://raw.githubusercontent.com/dvpe/Checkin/refs/heads/main/GovSP/CBS9342.jpg",
+                        "escolas": [
+                            "CEEP Deputado Francisco Antônio Paes Landim Neto",
+                            "Centro Educacional Liberalina Paes Landim",
+                            "Centro Educacional Elisa Maria Modesto Amorim"
+                        ]
+                    },
+                    {
+                        "condutor": "Motorista 2",
+                        "telefone": "8999999999",
+                        "placa": "CZB3F51",
+                        "destino": "CEEP Deputado Francisco Antônio Paes Landim Neto; Centro Educacional Liberalina Paes Landim; Centro Educacional Elisa Maria Modesto Amorim",
+                        "endereco_garagem": "R. Jose Esteves Amorim, 1020",
+                        "local_fotos": "https://raw.githubusercontent.com/dvpe/Checkin/refs/heads/main/GovSP/CZB3F51.jpg",
+                        "escolas": [
+                            "CEEP Deputado Francisco Antônio Paes Landim Neto",
+                            "Centro Educacional Liberalina Paes Landim",
+                            "Centro Educacional Elisa Maria Modesto Amorim"
+                        ]
+                    }
+                ],
+                "total_escolas": 3
+            }
+        };
+
+        // Pré-carregar imagens
+        function preloadImages() {
+            const images = [];
+            
+            images.push('https://raw.githubusercontent.com/dvpe/Checkin/main/Ultragaz/ULTRAGAZ.png');
+            
+            Object.values(cidadesData).forEach(cidade => {
+                cidade.vans.forEach(van => {
+                    if (van.local_fotos) {
+                        images.push(van.local_fotos);
+                    }
+                });
+            });
+
+            totalImages = images.length;
+            
+            images.forEach(src => {
+                const img = new Image();
+                img.onload = () => {
+                    imagesLoaded++;
+                    updateLoadingProgress();
+                };
+                img.onerror = () => {
+                    imagesLoaded++;
+                    updateLoadingProgress();
+                };
+                img.src = src;
+            });
+        }
+
+        function updateLoadingProgress() {
+            const progress = Math.round((imagesLoaded / totalImages) * 100);
+            document.getElementById('loading-progress').textContent = progress + '%';
+            
+            if (imagesLoaded >= totalImages) {
+                setTimeout(() => {
+                    document.getElementById('loading-screen').classList.add('hidden');
+                }, 500);
+            }
+        }
+
+        // Criar ícone SVG de van
+        function createVanIcon(color) {
+            return {
+                path: 'M17.402,0H5.643C2.526,0,0,3.467,0,6.584v34.804c0,3.116,2.526,5.644,5.643,5.644h11.759c3.116,0,5.644-2.527,5.644-5.644 V6.584C23.044,3.467,20.518,0,17.402,0z M22.057,14.188v11.665l-2.729,0.351v-4.806L22.057,14.188z M20.625,10.773 c-1.016,3.9-2.219,8.51-2.219,8.51H4.638l-2.222-8.51C2.417,10.773,11.3,7.755,20.625,10.773z M3.748,21.713v4.492l-2.73-0.349 V14.502L3.748,21.713z M1.018,37.938V27.579l2.73,0.343v8.196L1.018,37.938z M2.575,40.882l2.218-3.336h13.771l2.219,3.336H2.575z M19.328,35.805v-7.872l2.729-0.355v10.048L19.328,35.805z',
+                fillColor: color,
+                fillOpacity: 1,
+                strokeColor: '#ffffff',
+                strokeWeight: 2,
+                scale: 0.8,
+                anchor: new google.maps.Point(11, 23)
+            };
+        }
+
+        // Criar ícone de escola AMARELO
+        function createSchoolIcon() {
+            return {
+                path: 'M12 3L1 9l4 2.18v6L12 21l7-3.82v-6l2-1.09V17h2V9L12 3zm6.82 6L12 12.72 5.18 9 12 5.28 18.82 9zM17 15.99l-5 2.73-5-2.73v-3.72L12 15l5-2.73v3.72z',
+                fillColor: '#FFD700',
+                fillOpacity: 1,
+                strokeColor: '#FFA000',
+                strokeWeight: 2.5,
+                scale: 1.5,
+                anchor: new google.maps.Point(12, 12)
+            };
+        }
+
+        // Inicializar o mapa
+        function initMap() {
+            map = new google.maps.Map(document.getElementById('map'), {
+                center: { lat: -8.3589, lng: -42.2428 },
+                zoom: 14,
+                mapTypeId: 'roadmap',
+                styles: [
+                    {
+                        featureType: 'poi',
+                        elementType: 'labels',
+                        stylers: [{ visibility: 'off' }]
+                    }
+                ]
+            });
+
+            directionsService = new google.maps.DirectionsService();
+
+            const citySelect = document.getElementById('citySelect');
+            Object.keys(cidadesData).forEach(cidade => {
+                const option = document.createElement('option');
+                option.value = cidade;
+                option.textContent = cidade;
+                citySelect.appendChild(option);
+            });
+
+            gerarCards();
+        }
+
+        document.getElementById('citySelect').addEventListener('change', function() {
+            const cidade = this.value;
+            currentCity = cidade;
+
+            const vanSelect = document.getElementById('vanSelect');
+            vanSelect.innerHTML = '<option value="">-- Escolha uma van --</option>';
+
+            if (cidade && cidadesData[cidade]) {
+                vanSelect.disabled = false;
+                const vans = cidadesData[cidade].vans;
+
+                vans.forEach((van, index) => {
+                    const option = document.createElement('option');
+                    option.value = index;
+                    option.textContent = `${van.placa} - ${van.condutor}`;
+                    vanSelect.appendChild(option);
+                });
+
+                const center = cidadesData[cidade].center;
+                map.setCenter({ lat: center.lat, lng: center.lng });
+                map.setZoom(center.zoom);
+            } else {
+                vanSelect.disabled = true;
+                document.getElementById('vanInfo').style.display = 'none';
+            }
+        });
+
+        document.getElementById('vanSelect').addEventListener('change', function() {
+            const vanIndex = this.value;
+
+            if (vanIndex !== '' && currentCity && cidadesData[currentCity]) {
+                currentVan = cidadesData[currentCity].vans[vanIndex];
+
+                document.getElementById('vanPhoto').src = currentVan.local_fotos;
+                document.getElementById('vanDriver').textContent = currentVan.condutor;
+                document.getElementById('vanPhone').textContent = currentVan.telefone;
+                document.getElementById('vanPlate').textContent = currentVan.placa;
+                document.getElementById('vanGarage').textContent = currentVan.endereco_garagem;
+                document.getElementById('vanInfo').style.display = 'block';
+                
+                // Realizar check-in automaticamente ao selecionar van
+                realizarCheckin(vanIndex);
+            } else {
+                document.getElementById('vanInfo').style.display = 'none';
+                currentVan = null;
+            }
+        });
+
+        // Realizar check-in individual
+        function realizarCheckin(vanIndex) {
+            if (!currentCity || !currentVan) return;
+
+            limparMapa();
+
+            const status = document.getElementById('status');
+            const routeColor = routeColors[vanIndex % routeColors.length];
+            status.innerHTML = '<strong><i class="fas fa-spinner fa-spin"></i> Processando rota...</strong>';
+
+            const garagemAddress = currentVan.endereco_garagem + ', ' + currentCity + ', PI, Brasil';
+            const geocoder = new google.maps.Geocoder();
+
+            geocoder.geocode({ address: garagemAddress }, function(results, status) {
+                if (status === 'OK') {
+                    const garagemLocation = results[0].geometry.location;
+
+                    // Marcador da garagem
+                    const garagemMarker = new google.maps.Marker({
+                        position: garagemLocation,
+                        map: map,
+                        icon: createVanIcon(routeColor),
+                        title: 'Garagem - ' + currentVan.endereco_garagem,
+                        animation: google.maps.Animation.DROP
+                    });
+                    markers.push(garagemMarker);
+
+                    // Adicionar marcadores das escolas
+                    let waypoints = [];
+                    let processedSchools = 0;
+
+                    currentVan.escolas.forEach((escola, index) => {
+                        const escolaAddress = escola + ', ' + currentCity + ', PI, Brasil';
+                        geocoder.geocode({ address: escolaAddress }, function(results, status) {
+                            if (status === 'OK') {
+                                const escolaMarker = new google.maps.Marker({
+                                    position: results[0].geometry.location,
+                                    map: map,
+                                    icon: createSchoolIcon(),
+                                    title: escola,
+                                    label: {
+                                        text: String(index + 1),
+                                        color: '#0d47a1',
+                                        fontWeight: 'bold',
+                                        fontSize: '14px'
+                                    },
+                                    animation: google.maps.Animation.DROP
+                                });
+                                markers.push(escolaMarker);
+
+                                waypoints.push({
+                                    location: results[0].geometry.location,
+                                    stopover: true
+                                });
+
+                                processedSchools++;
+                                if (processedSchools === currentVan.escolas.length) {
+                                    tracarRota(garagemLocation, waypoints, routeColor);
+                                    document.getElementById('status').innerHTML = `<strong><i class="fas fa-check-circle"></i> Rota traçada!</strong><br>Van ${currentVan.placa} - ${currentVan.condutor}<br>${currentVan.escolas.length} paradas otimizadas`;
+                                }
+                            }
+                        });
+                    });
+                }
+            });
+        }
+
+        function tracarRota(origem, waypoints, color) {
+            if (waypoints.length === 0) return;
+
+            const renderer = new google.maps.DirectionsRenderer({
+                map: map,
+                suppressMarkers: true,
+                polylineOptions: {
+                    strokeColor: color,
+                    strokeWeight: 7,
+                    strokeOpacity: 0.9
+                },
+                preserveViewport: false
+            });
+            directionsRenderer.push(renderer);
+
+            const request = {
+                origin: origem,
+                destination: origem,
+                waypoints: waypoints,
+                travelMode: 'DRIVING',
+                optimizeWaypoints: true,
+                provideRouteAlternatives: false
+            };
+
+            directionsService.route(request, function(result, status) {
+                if (status === 'OK') {
+                    renderer.setDirections(result);
+                }
+            });
+        }
+
+        function simularTodasRotas() {
+            if (simulationInProgress) {
+                alert('Simulação já em andamento!');
+                return;
+            }
+
+            limparMapa();
+            simulationInProgress = true;
+
+            const status = document.getElementById('status');
+            status.innerHTML = '<strong><i class="fas fa-spinner fa-spin"></i> Simulando todas as rotas...</strong>';
+
+            const legendContainer = document.getElementById('route-legend');
+            legendContainer.innerHTML = '';
+            legendContainer.style.display = 'flex';
+
+            let processedVans = 0;
+            const totalVans = cidadesData["São João do Piauí"].vans.length;
+
+            Object.entries(cidadesData).forEach(([cidade, data]) => {
+                data.vans.forEach((van, vanIndex) => {
+                    const routeColor = routeColors[vanIndex % routeColors.length];
+                    
+                    const legendItem = document.createElement('div');
+                    legendItem.className = 'legend-item';
+                    legendItem.innerHTML = `
+                        <div class="legend-color" style="background-color: ${routeColor};"></div>
+                        <span>${van.placa}</span>
+                    `;
+                    legendContainer.appendChild(legendItem);
+
+                    setTimeout(() => {
+                        const garagemAddress = van.endereco_garagem + ', ' + cidade + ', PI, Brasil';
+                        const geocoder = new google.maps.Geocoder();
+
+                        geocoder.geocode({ address: garagemAddress }, function(results, status) {
+                            if (status === 'OK') {
+                                const garagemLocation = results[0].geometry.location;
+
+                                const marker = new google.maps.Marker({
+                                    position: garagemLocation,
+                                    map: map,
+                                    icon: createVanIcon(routeColor),
+                                    title: `${cidade} - ${van.placa}`,
+                                    animation: google.maps.Animation.DROP
+                                });
+                                markers.push(marker);
+
+                                let waypoints = [];
+                                let processedSchools = 0;
+                                
+                                van.escolas.forEach((escola, escolaIndex) => {
+                                    const escolaAddress = escola + ', ' + cidade + ', PI, Brasil';
+                                    geocoder.geocode({ address: escolaAddress }, function(results, status) {
+                                        if (status === 'OK') {
+                                            const escolaMarker = new google.maps.Marker({
+                                                position: results[0].geometry.location,
+                                                map: map,
+                                                icon: createSchoolIcon(),
+                                                title: escola,
+                                                label: {
+                                                    text: String(escolaIndex + 1),
+                                                    color: '#0d47a1',
+                                                    fontWeight: 'bold',
+                                                    fontSize: '14px'
+                                                },
+                                                animation: google.maps.Animation.DROP
+                                            });
+                                            markers.push(escolaMarker);
+
+                                            waypoints.push({
+                                                location: results[0].geometry.location,
+                                                stopover: true
+                                            });
+
+                                            processedSchools++;
+                                            if (processedSchools === van.escolas.length) {
+                                                tracarRota(garagemLocation, waypoints, routeColor);
+                                            }
+                                        }
+                                    });
+                                });
+
+                                processedVans++;
+                                if (processedVans === totalVans) {
+                                    setTimeout(() => {
+                                        simulationInProgress = false;
+                                        status.innerHTML = `<strong><i class="fas fa-check-circle"></i> Simulação concluída!</strong><br>Todas as ${totalVans} rotas foram mapeadas.`;
+                                    }, 2000);
+                                }
+                            }
+                        });
+                    }, vanIndex * 300);
+                });
+            });
+        }
+
+        function limparMapa() {
+            markers.forEach(marker => marker.setMap(null));
+            markers = [];
+
+            directionsRenderer.forEach(renderer => renderer.setMap(null));
+            directionsRenderer = [];
+
+            document.getElementById('route-legend').style.display = 'none';
+            document.getElementById('status').innerHTML = '<i class="fas fa-info-circle"></i> Mapa limpo. Selecione uma cidade e van para começar.';
+        }
+
+        function gerarCards() {
+            const container = document.getElementById('cards-container');
+            container.innerHTML = '';
+
+            Object.entries(cidadesData).forEach(([cidade, data]) => {
+                const card = document.createElement('div');
+                card.className = 'city-card';
+
+                let vansHTML = '';
+                data.vans.forEach(van => {
+                    const escolasListHTML = van.escolas.map(e => `<li>${e}</li>`).join('');
+
+                    vansHTML += `
+                        <div class="van-gallery-item">
+                            <img src="${van.local_fotos}" alt="Van ${van.placa}" class="van-gallery-photo" onerror="this.style.display='none'">
+                            <div class="van-gallery-info">
+                                <strong><i class="fas fa-id-card"></i> Placa:</strong> ${van.placa}<br>
+                                <strong><i class="fas fa-user"></i> Condutor:</strong> ${van.condutor}<br>
+                                <strong><i class="fas fa-phone"></i> Telefone:</strong> ${van.telefone}<br>
+                                <strong><i class="fas fa-home"></i> Garagem:</strong> ${van.endereco_garagem}
+                                <details class="escolas-dropdown">
+                                    <summary><i class="fas fa-school"></i> Ver Escolas (${van.escolas.length})</summary>
+                                    <div class="escolas-list">
+                                        <ul>${escolasListHTML}</ul>
+                                    </div>
+                                </details>
+                            </div>
+                        </div>
+                    `;
+                });
+
+                card.innerHTML = `
+                    <div class="city-header">
+                        <div class="city-name"><i class="fas fa-city"></i> ${cidade}</div>
+                        <div class="vehicle-count"><i class="fas fa-van-shuttle"></i> ${data.vans.length} veículo(s) • <i class="fas fa-school"></i> ${data.total_escolas} escola(s)</div>
+                    </div>
+                    <div class="vans-gallery">
+                        ${vansHTML}
+                    </div>
+                `;
+
+                container.appendChild(card);
+            });
+        }
+
+        window.addEventListener('load', () => {
+            preloadImages();
+        });
+    </script>
+
+    <script async defer src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBDKTnVRwJ0CwotEFufK4maf9L0i-27M04&callback=initMap"></script>
+</body>
+
+</html>
+
